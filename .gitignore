@@ -96,4 +96,4 @@ HOOOOHO.txt
 .sign
 
 # Logs
-*.log
+*.log~.git-credentials
