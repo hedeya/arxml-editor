@@ -1,0 +1,5 @@
+PyQt6==6.6.1
+lxml==4.9.3
+xmlschema==3.3.0
+pydantic==2.5.0
+typing-extensions==4.8.0

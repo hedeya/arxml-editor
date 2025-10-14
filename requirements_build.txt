@@ -1,0 +1,16 @@
+# ARXML Editor - Build Requirements
+# This file contains all dependencies needed to build the Windows executable
+
+# Core GUI Framework
+PyQt6>=6.4.0
+
+# XML Processing
+lxml>=4.9.0
+xmlschema>=2.5.0
+
+# Build Tools
+pyinstaller>=5.13.0
+
+# Additional dependencies that might be needed
+setuptools>=65.0.0
+wheel>=0.37.0

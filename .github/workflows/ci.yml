@@ -1,0 +1,111 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: [3.8, 3.9, '3.10', '3.11', '3.12']
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest pytest-qt
+    
+    - name: Lint with flake8
+      run: |
+        pip install flake8
+        flake8 src/ --count --select=E9,F63,F7,F82 --show-source --statistics
+        flake8 src/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    
+    - name: Test with pytest
+      run: |
+        python -c "from src.core.models.arxml_document import ARXMLDocument; print('Import test passed')"
+        python -c "from src.core.models.autosar_elements import SwComponentType; print('Models test passed')"
+        python -c "from src.core.services.schema_service import SchemaService; print('Services test passed')"
+    
+    - name: Test ARXML functionality
+      run: |
+        python -c "
+        from src.core.models.arxml_document import ARXMLDocument
+        from src.core.models.autosar_elements import ApplicationSwComponentType
+        
+        # Test document creation
+        doc = ARXMLDocument()
+        assert doc.schema_version == '4.7.0'
+        
+        # Test component addition
+        comp = ApplicationSwComponentType('TestComponent', 'Test description')
+        doc.add_sw_component_type(comp)
+        assert len(doc.sw_component_types) == 1
+        assert doc.modified == True
+        
+        # Test save functionality
+        import tempfile
+        with tempfile.NamedTemporaryFile(suffix='.arxml', delete=False) as f:
+            temp_path = f.name
+        
+        success = doc.save_document(temp_path)
+        assert success == True
+        
+        # Clean up
+        import os
+        os.unlink(temp_path)
+        
+        print('All tests passed!')
+        "
+
+  build:
+    runs-on: ${{ matrix.os }}
+    needs: test
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pyinstaller
+    
+    - name: Build executable (Windows)
+      if: matrix.os == 'windows-latest'
+      run: |
+        pyinstaller --onefile --windowed --name ARXML_Editor main.py
+        ls -la dist/
+    
+    - name: Build executable (Linux)
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        pyinstaller --onefile --name ARXML_Editor main.py
+        ls -la dist/
+    
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: arxml-editor-${{ matrix.os }}
+        path: dist/
