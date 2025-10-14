@@ -78,7 +78,10 @@ Tests/temp_*.py
 !sample.arxml
 !schemas/*.xsd
 Backup/
-ARXML_Editor_Windows/
+# Allow distribution folder but exclude build artifacts
+ARXML_Editor_Windows/build/
+ARXML_Editor_Windows/dist/
+ARXML_Editor_Windows/*.spec
 *.zip
 
 # Eclipse installer and development files
@@ -90,6 +93,9 @@ dist/
 venv/
 *.pyc
 __pycache__/
+
+# Allow PyInstaller spec file for Windows builds
+!arxml_editor.spec
 
 # Temporary files
 HOOOOHO.txt

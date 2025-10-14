@@ -1,0 +1,11 @@
+This is a placeholder executable. Please build the actual executable using the provided build instructions.
+
+To build the ARXML Editor executable:
+
+1. Install Python 3.8+ on Windows
+2. Install PyInstaller: pip install pyinstaller
+3. Install dependencies: pip install -r requirements.txt
+4. Run: pyinstaller --clean arxml_editor.spec
+5. Copy the generated .exe from dist/ to this location
+
+For detailed instructions, see BUILD_INSTRUCTIONS.md
