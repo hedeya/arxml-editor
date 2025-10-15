@@ -45,6 +45,12 @@ class TreeNavigator(QTreeWidget):
         header.setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
         header.setSectionResizeMode(1, QHeaderView.ResizeMode.ResizeToContents)
         
+        # Enable drag and drop
+        self.setDragDropMode(QTreeWidget.DragDropMode.InternalMove)
+        self.setDragEnabled(True)
+        self.setAcceptDrops(True)
+        self.setDropIndicatorShown(True)
+        
         # Root items are created dynamically in refresh()
     
     
@@ -430,14 +436,47 @@ class TreeNavigator(QTreeWidget):
         return False
     
     def _delete_element(self, element):
-        """Delete element"""
-        reply = QMessageBox.question(
-            self, "Delete Element",
-            f"Are you sure you want to delete '{element.short_name}'?",
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
-        )
+        """Delete element with confirmation and children warning"""
+        # Check if element has children
+        has_children = False
+        children_info = ""
         
-        if reply == QMessageBox.StandardButton.Yes:
+        if isinstance(element, SwComponentType):
+            if element.ports:
+                has_children = True
+                children_info = f"\n\n⚠️  This component has {len(element.ports)} port(s) that will also be deleted."
+        elif isinstance(element, Composition):
+            if element.component_types:
+                has_children = True
+                children_info = f"\n\n⚠️  This composition has {len(element.component_types)} component type(s) that will also be deleted."
+        elif isinstance(element, PortInterface):
+            if element.data_elements:
+                has_children = True
+                children_info = f"\n\n⚠️  This port interface has {len(element.data_elements)} data element(s) that will also be deleted."
+        
+        # Create confirmation message
+        message = f"Are you sure you want to delete '{element.short_name}'?"
+        if has_children:
+            message += children_info
+            message += "\n\nThis action cannot be undone."
+        
+        # Create custom message box with detailed buttons
+        msg_box = QMessageBox(self)
+        msg_box.setWindowTitle("Delete Element")
+        msg_box.setText(message)
+        msg_box.setIcon(QMessageBox.Icon.Warning)
+        
+        # Add custom buttons
+        delete_button = msg_box.addButton("Delete", QMessageBox.ButtonRole.AcceptRole)
+        cancel_button = msg_box.addButton("Cancel", QMessageBox.ButtonRole.RejectRole)
+        
+        # Set default button
+        msg_box.setDefaultButton(cancel_button)
+        
+        # Show dialog
+        result = msg_box.exec()
+        
+        if result == 0:  # Delete button clicked
             if isinstance(element, SwComponentType):
                 self.app.current_document.remove_sw_component_type(element)
             elif isinstance(element, Composition):
@@ -448,3 +487,78 @@ class TreeNavigator(QTreeWidget):
                 self.app.current_document.remove_service_interface(element)
             
             self.refresh()
+    
+    def dragEnterEvent(self, event):
+        """Handle drag enter event"""
+        if event.source() == self:
+            event.accept()
+        else:
+            event.ignore()
+    
+    def dragMoveEvent(self, event):
+        """Handle drag move event"""
+        if event.source() == self:
+            event.accept()
+        else:
+            event.ignore()
+    
+    def dropEvent(self, event):
+        """Handle drop event"""
+        if event.source() != self:
+            event.ignore()
+            return
+        
+        # Get the dragged item
+        dragged_item = self.currentItem()
+        if not dragged_item:
+            event.ignore()
+            return
+        
+        # Get the target item
+        target_item = self.itemAt(event.pos())
+        if not target_item:
+            event.ignore()
+            return
+        
+        # Get the dragged element
+        dragged_element = dragged_item.data(0, Qt.ItemDataRole.UserRole + 1)
+        if not dragged_element:
+            event.ignore()
+            return
+        
+        # Get target item data
+        target_data = target_item.data(0, Qt.ItemDataRole.UserRole)
+        
+        # Only allow moving elements within the same category or to a different category
+        if self._can_move_element(dragged_element, target_data):
+            self._move_element(dragged_element, target_data)
+            event.accept()
+        else:
+            event.ignore()
+    
+    def _can_move_element(self, element, target_data):
+        """Check if element can be moved to target"""
+        # Allow moving elements to category roots
+        if target_data in ["sw_component_types", "compositions", "port_interfaces", "service_interfaces"]:
+            return True
+        
+        # Allow moving elements to other elements of the same type
+        if isinstance(element, SwComponentType) and isinstance(target_data, SwComponentType):
+            return True
+        elif isinstance(element, Composition) and isinstance(target_data, Composition):
+            return True
+        elif isinstance(element, PortInterface) and isinstance(target_data, PortInterface):
+            return True
+        
+        return False
+    
+    def _move_element(self, element, target_data):
+        """Move element to target location"""
+        # For now, we'll just refresh the tree to show the move
+        # In a more sophisticated implementation, we could reorder elements
+        # or move them between different categories
+        self.refresh()
+        
+        # Mark document as modified
+        if hasattr(self.app, 'current_document') and self.app.current_document:
+            self.app.current_document.set_modified(True)

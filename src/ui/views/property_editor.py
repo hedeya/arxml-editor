@@ -424,8 +424,11 @@ class PropertyEditor(QWidget):
         
         # Short name
         short_name_edit = QLineEdit(ecuc_element.get('short_name', ''))
-        short_name_edit.setReadOnly(True)
+        short_name_edit.textChanged.connect(
+            lambda text: self._on_ecuc_property_changed(ecuc_element, "short_name", text)
+        )
         basic_layout.addRow("Short Name:", short_name_edit)
+        self._property_widgets["short_name"] = short_name_edit
         
         # UUID (if available)
         if 'uuid' in ecuc_element:
@@ -453,7 +456,9 @@ class PropertyEditor(QWidget):
         
         # Short name
         short_name_edit = QLineEdit(container.get('short_name', ''))
-        short_name_edit.setReadOnly(True)
+        short_name_edit.textChanged.connect(
+            lambda text: self._on_ecuc_container_property_changed(container, "short_name", text)
+        )
         container_layout.addRow("Short Name:", short_name_edit)
         
         # Definition ref
@@ -482,7 +487,9 @@ class PropertyEditor(QWidget):
         
         # Short name
         short_name_edit = QLineEdit(param.get('short_name', ''))
-        short_name_edit.setReadOnly(True)
+        short_name_edit.textChanged.connect(
+            lambda text: self._on_ecuc_parameter_property_changed(param, "short_name", text)
+        )
         param_layout.addRow("Short Name:", short_name_edit)
         
         # Definition ref
@@ -494,7 +501,9 @@ class PropertyEditor(QWidget):
         # Value
         if param.get('value'):
             value_edit = QLineEdit(param['value'])
-            value_edit.setReadOnly(True)
+            value_edit.textChanged.connect(
+                lambda text: self._on_ecuc_parameter_property_changed(param, "value", text)
+            )
             param_layout.addRow("Value:", value_edit)
         
         return param_group
@@ -513,6 +522,42 @@ class PropertyEditor(QWidget):
         
         # Emit signal
         self.property_changed.emit(element, property_name, new_value)
+    
+    def _on_ecuc_property_changed(self, ecuc_element: dict, property_name: str, new_value):
+        """Handle ECUC element property change"""
+        # Update element
+        ecuc_element[property_name] = new_value
+        
+        # Mark document as modified
+        if hasattr(self.app, 'current_document') and self.app.current_document:
+            self.app.current_document.set_modified(True)
+        
+        # Emit signal
+        self.property_changed.emit(ecuc_element, property_name, new_value)
+    
+    def _on_ecuc_container_property_changed(self, container: dict, property_name: str, new_value):
+        """Handle ECUC container property change"""
+        # Update container
+        container[property_name] = new_value
+        
+        # Mark document as modified
+        if hasattr(self.app, 'current_document') and self.app.current_document:
+            self.app.current_document.set_modified(True)
+        
+        # Emit signal
+        self.property_changed.emit(container, property_name, new_value)
+    
+    def _on_ecuc_parameter_property_changed(self, parameter: dict, property_name: str, new_value):
+        """Handle ECUC parameter property change"""
+        # Update parameter
+        parameter[property_name] = new_value
+        
+        # Mark document as modified
+        if hasattr(self.app, 'current_document') and self.app.current_document:
+            self.app.current_document.set_modified(True)
+        
+        # Emit signal
+        self.property_changed.emit(parameter, property_name, new_value)
     
     def clear(self):
         """Clear the property editor"""

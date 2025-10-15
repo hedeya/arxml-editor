@@ -152,6 +152,15 @@ class MainWindow(QMainWindow):
         redo_action.triggered.connect(self._redo)
         edit_menu.addAction(redo_action)
         
+        edit_menu.addSeparator()
+        
+        # Delete
+        delete_action = QAction("&Delete", self)
+        delete_action.setShortcut(QKeySequence.StandardKey.Delete)
+        delete_action.setStatusTip("Delete selected element")
+        delete_action.triggered.connect(self._delete_selected)
+        edit_menu.addAction(delete_action)
+        
         # View menu
         view_menu = menubar.addMenu("&View")
         
@@ -288,6 +297,14 @@ class MainWindow(QMainWindow):
             self.status_bar.showMessage("Action redone")
         else:
             self.status_bar.showMessage("Nothing to redo")
+    
+    def _delete_selected(self):
+        """Delete selected element"""
+        current_item = self.tree_navigator.currentItem()
+        if current_item:
+            element = current_item.data(0, Qt.ItemDataRole.UserRole + 1)
+            if element:
+                self.tree_navigator._delete_element(element)
     
     def _set_schema_version(self, version: str):
         """Set AUTOSAR schema version"""
