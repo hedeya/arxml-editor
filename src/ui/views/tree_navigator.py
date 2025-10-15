@@ -562,3 +562,66 @@ class TreeNavigator(QTreeWidget):
         # Mark document as modified
         if hasattr(self.app, 'current_document') and self.app.current_document:
             self.app.current_document.set_modified(True)
+    
+    def dragEnterEvent(self, event):
+        """Handle drag enter event"""
+        if event.source() == self:
+            event.acceptProposedAction()
+        else:
+            event.ignore()
+    
+    def dragMoveEvent(self, event):
+        """Handle drag move event"""
+        if event.source() == self:
+            # Get the item under the cursor
+            item = self.itemAt(event.pos())
+            if item:
+                # Set drop indicator
+                self.setDropIndicatorShown(True)
+                self.setDragDropMode(QTreeWidget.DragDropMode.InternalMove)
+                
+                # Check if we can move to this location
+                dragged_item = self.currentItem()
+                if dragged_item:
+                    dragged_element = dragged_item.data(0, Qt.ItemDataRole.UserRole)
+                    target_element = item.data(0, Qt.ItemDataRole.UserRole)
+                    
+                    if self._can_move_element(dragged_element, target_element):
+                        event.acceptProposedAction()
+                    else:
+                        event.ignore()
+                else:
+                    event.acceptProposedAction()
+            else:
+                event.acceptProposedAction()
+        else:
+            event.ignore()
+    
+    def dropEvent(self, event):
+        """Handle drop event"""
+        if event.source() == self:
+            # Get the dragged item
+            dragged_item = self.currentItem()
+            if not dragged_item:
+                event.ignore()
+                return
+            
+            # Get the target item
+            target_item = self.itemAt(event.pos())
+            if not target_item:
+                event.ignore()
+                return
+            
+            # Get elements
+            dragged_element = dragged_item.data(0, Qt.ItemDataRole.UserRole)
+            target_element = target_item.data(0, Qt.ItemDataRole.UserRole)
+            
+            # Check if move is allowed
+            if self._can_move_element(dragged_element, target_element):
+                # Perform the move
+                self._move_element(dragged_element, target_element)
+                event.acceptProposedAction()
+            else:
+                event.ignore()
+        else:
+            event.ignore()

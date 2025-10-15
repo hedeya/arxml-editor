@@ -179,7 +179,20 @@ class ARXMLParser(QObject):
             if ecuc_data:
                 ecuc_elements.append(ecuc_data)
         
+        # Also find other ECUC elements that might be at the root level
+        other_ecuc_elements = root.xpath('.//ar:ECUC-MODULE-DEF', namespaces=self._namespaces)
+        for ecuc_elem in other_ecuc_elements:
+            ecuc_data = self._parse_generic_ecuc_element(ecuc_elem)
+            if ecuc_data:
+                ecuc_elements.append(ecuc_data)
+        
         return ecuc_elements
+    
+    def _mark_element_and_descendants(self, elem, processed_set):
+        """Mark element and all its descendants as processed"""
+        processed_set.add(elem)
+        for child in elem:
+            self._mark_element_and_descendants(child, processed_set)
     
     def _parse_ecuc_module_configuration(self, elem: etree.Element) -> Optional[dict]:
         """Parse ECUC-MODULE-CONFIGURATION-VALUES element"""
@@ -194,8 +207,14 @@ class ARXMLParser(QObject):
                 'type': 'ECUC-MODULE-CONFIGURATION-VALUES',
                 'short_name': short_name,
                 'uuid': uuid,
-                'containers': []
+                'containers': [],
+                'admin_data': None
             }
+            
+            # Extract admin data if present
+            admin_data_elem = elem.find('.//ar:ADMIN-DATA', self._namespaces)
+            if admin_data_elem is not None:
+                ecuc_data['admin_data'] = self._parse_admin_data(admin_data_elem)
             
             # Extract ECUC-CONTAINER-VALUE elements
             containers = elem.xpath('.//ar:ECUC-CONTAINER-VALUE', namespaces=self._namespaces)
@@ -223,8 +242,24 @@ class ARXMLParser(QObject):
                 'type': 'ECUC-CONTAINER-VALUE',
                 'short_name': short_name,
                 'definition_ref': definition_ref,
-                'parameters': []
+                'parameters': [],
+                'containers': [],
+                'admin_data': None
             }
+            
+            # Extract admin data if present
+            admin_data_elem = elem.find('.//ar:ADMIN-DATA', self._namespaces)
+            if admin_data_elem is not None:
+                container_data['admin_data'] = self._parse_admin_data(admin_data_elem)
+            
+            # Extract nested ECUC-CONTAINER-VALUE elements
+            nested_containers = elem.xpath('.//ar:ECUC-CONTAINER-VALUE', namespaces=self._namespaces)
+            for container in nested_containers:
+                # Skip self to avoid infinite recursion
+                if container != elem:
+                    container_data_nested = self._parse_ecuc_container_value(container)
+                    if container_data_nested:
+                        container_data['containers'].append(container_data_nested)
             
             # Extract ECUC-PARAMETER-VALUE elements
             parameters = elem.xpath('.//ar:ECUC-PARAMETER-VALUE', namespaces=self._namespaces)
@@ -249,12 +284,20 @@ class ARXMLParser(QObject):
             if not short_name:
                 return None
             
-            return {
+            param_data = {
                 'type': 'ECUC-PARAMETER-VALUE',
                 'short_name': short_name,
                 'definition_ref': definition_ref,
-                'value': value
+                'value': value,
+                'admin_data': None
             }
+            
+            # Extract admin data if present
+            admin_data_elem = elem.find('.//ar:ADMIN-DATA', self._namespaces)
+            if admin_data_elem is not None:
+                param_data['admin_data'] = self._parse_admin_data(admin_data_elem)
+            
+            return param_data
         
         except Exception as e:
             print(f"Error parsing ECUC parameter value: {e}")
@@ -737,4 +780,84 @@ class ARXMLParser(QObject):
         
         except Exception as e:
             print(f"Error serializing data element: {e}")
+            return None
+    
+    def _parse_admin_data(self, elem: etree.Element) -> dict:
+        """Parse ADMIN-DATA element recursively"""
+        admin_data = {}
+        
+        # Process all child elements
+        for child in elem:
+            tag_name = child.tag.split('}')[-1] if '}' in child.tag else child.tag
+            
+            if len(child) == 0:
+                # Leaf element with text content
+                if child.text and child.text.strip():
+                    admin_data[tag_name] = child.text.strip()
+                else:
+                    # Element with attributes but no text
+                    admin_data[tag_name] = {}
+                    for attr_name, attr_value in child.attrib.items():
+                        admin_data[tag_name][attr_name] = attr_value
+            else:
+                # Element with children
+                if tag_name in admin_data:
+                    if not isinstance(admin_data[tag_name], list):
+                        admin_data[tag_name] = [admin_data[tag_name]]
+                    admin_data[tag_name].append(self._parse_admin_data(child))
+                else:
+                    admin_data[tag_name] = self._parse_admin_data(child)
+        
+        return admin_data
+    
+    def _parse_generic_ecuc_element(self, elem: etree.Element) -> Optional[dict]:
+        """Parse generic ECUC element"""
+        try:
+            tag_name = elem.tag.split('}')[-1] if '}' in elem.tag else elem.tag
+            short_name = self._get_text_content(elem, './/ar:SHORT-NAME')
+            
+            if not short_name:
+                return None
+            
+            ecuc_data = {
+                'type': tag_name,
+                'short_name': short_name,
+                'admin_data': None,
+                'containers': [],
+                'parameters': []
+            }
+            
+            # Extract admin data if present
+            admin_data_elem = elem.find('.//ar:ADMIN-DATA', self._namespaces)
+            if admin_data_elem is not None:
+                ecuc_data['admin_data'] = self._parse_admin_data(admin_data_elem)
+            
+            # Extract all child elements recursively
+            for child in elem:
+                child_tag = child.tag.split('}')[-1] if '}' in child.tag else child.tag
+                
+                if child_tag == 'ECUC-CONTAINER-VALUE':
+                    container_data = self._parse_ecuc_container_value(child)
+                    if container_data:
+                        ecuc_data['containers'].append(container_data)
+                elif child_tag in ['ECUC-PARAMETER-VALUE', 'ECUC-NUMERICAL-PARAM-VALUE', 'ECUC-TEXTUAL-PARAM-VALUE', 
+                                 'ECUC-BOOLEAN-PARAM-DEF', 'ECUC-INTEGER-PARAM-DEF', 'ECUC-STRING-PARAM-DEF',
+                                 'ECUC-ENUMERATION-PARAM-DEF', 'ECUC-REFERENCE-VALUE', 'ECUC-INSTANCE-REFERENCE-VALUE']:
+                    param_data = self._parse_ecuc_parameter_value(child)
+                    if param_data:
+                        ecuc_data['parameters'].append(param_data)
+                elif child_tag not in ['SHORT-NAME', 'ADMIN-DATA']:
+                    # Handle other ECUC elements
+                    child_data = self._parse_generic_ecuc_element(child)
+                    if child_data:
+                        if child_tag not in ecuc_data:
+                            ecuc_data[child_tag] = []
+                        if not isinstance(ecuc_data[child_tag], list):
+                            ecuc_data[child_tag] = [ecuc_data[child_tag]]
+                        ecuc_data[child_tag].append(child_data)
+            
+            return ecuc_data
+        
+        except Exception as e:
+            print(f"Error parsing generic ECUC element: {e}")
             return None

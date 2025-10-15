@@ -36,6 +36,7 @@ class ARXMLDocument(QObject):
         self._port_interfaces: List[PortInterface] = []
         self._service_interfaces: List[ServiceInterface] = []
         self._ecuc_elements: List[dict] = []
+        self._original_xml_elements: List[etree.Element] = []
         
         # Initialize with empty ARXML structure
         self._initialize_empty_document()
@@ -153,6 +154,16 @@ class ARXMLDocument(QObject):
         self._port_interfaces = parser.extract_port_interfaces(root_element)
         self._service_interfaces = parser.extract_service_interfaces(root_element)
         self._ecuc_elements = parser.extract_ecuc_elements(root_element)
+        
+        # Store original XML elements for better preservation
+        self._original_xml_elements = []
+        elements_container = root_element.find('.//{http://autosar.org/schema/r4.0}ELEMENTS')
+        if elements_container is not None:
+            for child in elements_container:
+                # Store all elements that are not basic AUTOSAR elements
+                if not child.tag.endswith(('APPLICATION-SW-COMPONENT-TYPE', 'ATOMIC-SW-COMPONENT-TYPE', 
+                                         'COMPOSITION-SW-COMPONENT-TYPE', 'PORT-INTERFACE', 'SERVICE-INTERFACE')):
+                    self._original_xml_elements.append(child)
     
     def save_to_file(self, file_path: str):
         """Save document to file"""
@@ -311,6 +322,18 @@ class ARXMLDocument(QObject):
             comp_elem = self._composition_to_xml(composition)
             elements.append(comp_elem)
         
+        # Add ECUC elements
+        for ecuc_element in self._ecuc_elements:
+            ecuc_elem = self._ecuc_element_to_xml(ecuc_element)
+            elements.append(ecuc_elem)
+        
+        # Add original XML elements (for better preservation)
+        for xml_elem in self._original_xml_elements:
+            # Create a copy of the element to avoid modifying the original
+            import copy
+            elem_copy = copy.deepcopy(xml_elem)
+            elements.append(elem_copy)
+        
         return root
     
     def _component_type_to_xml(self, component_type: SwComponentType) -> etree.Element:
@@ -426,3 +449,66 @@ class ARXMLDocument(QObject):
             desc_l2.text = composition.desc
         
         return elem
+    
+    def _ecuc_element_to_xml(self, ecuc_element: dict) -> etree.Element:
+        """Convert ECUC element to XML element"""
+        # Create the appropriate ECUC element type
+        element_type = ecuc_element.get('type', 'ECUC-MODULE-CONFIGURATION-VALUES')
+        elem = etree.Element(element_type)
+        
+        # Add UUID if present
+        if 'uuid' in ecuc_element:
+            elem.set('UUID', ecuc_element['uuid'])
+        
+        # Add short name
+        if 'short_name' in ecuc_element:
+            short_name = etree.SubElement(elem, "SHORT-NAME")
+            short_name.text = ecuc_element['short_name']
+        
+        # Add description if available
+        if 'desc' in ecuc_element and ecuc_element['desc']:
+            desc = etree.SubElement(elem, "DESC")
+            desc_l2 = etree.SubElement(desc, "L-2")
+            desc_l2.text = ecuc_element['desc']
+        
+        # Add admin data if present
+        if 'admin_data' in ecuc_element and ecuc_element['admin_data']:
+            admin_data = etree.SubElement(elem, "ADMIN-DATA")
+            # Convert admin data from dict to XML structure
+            self._dict_to_xml(admin_data, ecuc_element['admin_data'])
+        
+        # Add containers if present
+        if 'containers' in ecuc_element and ecuc_element['containers']:
+            for container in ecuc_element['containers']:
+                container_elem = self._ecuc_element_to_xml(container)
+                elem.append(container_elem)
+        
+        # Add parameters if present
+        if 'parameters' in ecuc_element and ecuc_element['parameters']:
+            for parameter in ecuc_element['parameters']:
+                param_elem = self._ecuc_element_to_xml(parameter)
+                elem.append(param_elem)
+        
+        return elem
+    
+    def _dict_to_xml(self, parent_elem, data_dict):
+        """Convert dictionary to XML structure recursively"""
+        for key, value in data_dict.items():
+            if isinstance(value, dict):
+                # Create sub-element for nested dict
+                sub_elem = etree.SubElement(parent_elem, key)
+                self._dict_to_xml(sub_elem, value)
+            elif isinstance(value, list):
+                # Handle lists
+                for item in value:
+                    if isinstance(item, dict):
+                        sub_elem = etree.SubElement(parent_elem, key)
+                        self._dict_to_xml(sub_elem, item)
+                    else:
+                        sub_elem = etree.SubElement(parent_elem, key)
+                        sub_elem.text = str(item)
+            else:
+                # Simple key-value pair
+                sub_elem = etree.SubElement(parent_elem, key)
+                if value is not None:
+                    sub_elem.text = str(value)
