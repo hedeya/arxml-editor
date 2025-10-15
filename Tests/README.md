@@ -11,6 +11,8 @@ This directory contains all test files for the ARXML Editor project. The tests a
 - **`test_new_features.py`** - Tests enhanced user interaction features (editable properties, drag & drop, delete confirmation, save as)
 - **`test_save_functionality.py`** - Tests basic save functionality and property persistence
 - **`test_property_persistence.py`** - Tests property persistence fixes and save with changes
+- **`test_fixes.py`** - Tests the three main fixes: ECUC saving, property persistence, and drag & drop
+- **`test_real_ecuc_save.py`** - Tests loading and saving real ECUC files with complete element preservation
 
 ### Schema and Validation Tests
 - **`test_schema_detection.py`** - Tests automatic schema version detection
@@ -64,6 +66,8 @@ python -u test_editing_features.py
 - `test_new_features.py` - **MUST PASS** - Enhanced user interaction features
 - `test_save_functionality.py` - **MUST PASS** - Basic save functionality and property persistence
 - `test_property_persistence.py` - **MUST PASS** - Property persistence fixes and save with changes
+- `test_fixes.py` - **MUST PASS** - Tests the three main fixes: ECUC saving, property persistence, and drag & drop
+- `test_real_ecuc_save.py` - **MUST PASS** - Tests real ECUC file loading and saving with complete element preservation
 
 ### ✅ GUI Tests (Important)
 - `test_gui_loading.py` - GUI initialization
@@ -161,6 +165,9 @@ python -u test_editing_features.py 2>&1 | tee test_output.log
 - ✅ Enhanced user interaction features (editable properties, drag & drop, delete confirmation, save as)
 - ✅ Property persistence and widget value saving
 - ✅ Save functionality with property changes
+- ✅ ECUC file complete preservation (14,059+ elements)
+- ✅ Drag and drop visual indicators and validation
+- ✅ Real ECUC file loading and saving with fidelity verification
 
 ### Areas Needing More Tests
 - 🔄 Error handling and edge cases
