@@ -79,8 +79,7 @@ class PropertyEditor(QWidget):
     
     def clear(self):
         """Clear the property editor and show empty state"""
-        # Save current widget values before clearing
-        self._save_current_widget_values()
+        # No need to save - real-time updates handle this
         self._current_element = None
         self._show_empty_state()
     
@@ -175,10 +174,7 @@ class PropertyEditor(QWidget):
     
     def set_element(self, element):
         """Set the current element for editing"""
-        # Save current widget values before switching
-        self._save_current_widget_values()
-        
-        # Clear properties after saving values
+        # Clear properties (no need to save - real-time updates handle this)
         self._clear_properties()
         
         self._current_element = element
@@ -520,6 +516,11 @@ class PropertyEditor(QWidget):
         
         # Short name
         short_name_edit = QLineEdit(ecuc_element.get('short_name', ''))
+        # Use editingFinished signal for better validation
+        short_name_edit.editingFinished.connect(
+            lambda: self._on_ecuc_property_changed(ecuc_element, "short_name", short_name_edit.text())
+        )
+        # Also connect textChanged for real-time updates
         short_name_edit.textChanged.connect(
             lambda text: self._on_ecuc_property_changed(ecuc_element, "short_name", text)
         )
@@ -621,8 +622,17 @@ class PropertyEditor(QWidget):
     
     def _on_ecuc_property_changed(self, ecuc_element: dict, property_name: str, new_value):
         """Handle ECUC element property change"""
+        # Validate input
+        if not isinstance(ecuc_element, dict):
+            print(f"Warning: ecuc_element is not a dict: {type(ecuc_element)}")
+            return
+        
         # Update element
+        old_value = ecuc_element.get(property_name, '')
         ecuc_element[property_name] = new_value
+        
+        # Log the change for debugging
+        print(f"ECUC property changed: {property_name} = '{old_value}' -> '{new_value}'")
         
         # Mark document as modified
         if hasattr(self.app, 'current_document') and self.app.current_document:
