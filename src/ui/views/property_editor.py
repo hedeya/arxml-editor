@@ -79,11 +79,87 @@ class PropertyEditor(QWidget):
     
     def clear(self):
         """Clear the property editor and show empty state"""
+        # Save current widget values before clearing
+        self._save_current_widget_values()
         self._current_element = None
         self._show_empty_state()
     
+    def _save_current_widget_values(self):
+        """Save current widget values to the element before switching"""
+        if not self._current_element or not self._property_widgets:
+            return
+        
+        try:
+            # Save values from all property widgets
+            for property_name, widget in self._property_widgets.items():
+                if hasattr(widget, 'text'):
+                    # QLineEdit, QTextEdit
+                    if hasattr(widget, 'toPlainText'):
+                        # QTextEdit
+                        value = widget.toPlainText()
+                    else:
+                        # QLineEdit
+                        value = widget.text()
+                    
+                    # Update the element
+                    if hasattr(self._current_element, property_name):
+                        setattr(self._current_element, property_name, value)
+                        # Mark document as modified
+                        if hasattr(self.app, 'current_document') and self.app.current_document:
+                            self.app.current_document.set_modified(True)
+                
+                elif hasattr(widget, 'isChecked'):
+                    # QCheckBox
+                    value = widget.isChecked()
+                    if hasattr(self._current_element, property_name):
+                        setattr(self._current_element, property_name, value)
+                        if hasattr(self.app, 'current_document') and self.app.current_document:
+                            self.app.current_document.set_modified(True)
+                
+                elif hasattr(widget, 'value'):
+                    # QSpinBox, QDoubleSpinBox
+                    value = widget.value()
+                    if hasattr(self._current_element, property_name):
+                        setattr(self._current_element, property_name, value)
+                        if hasattr(self.app, 'current_document') and self.app.current_document:
+                            self.app.current_document.set_modified(True)
+                
+                elif hasattr(widget, 'currentText'):
+                    # QComboBox
+                    value = widget.currentText()
+                    if hasattr(self._current_element, property_name):
+                        # Handle enum types
+                        if property_name == 'port_type' and hasattr(self._current_element, 'port_type'):
+                            from ...core.models.autosar_elements import PortType
+                            try:
+                                enum_value = PortType(value)
+                                setattr(self._current_element, property_name, enum_value)
+                                if hasattr(self.app, 'current_document') and self.app.current_document:
+                                    self.app.current_document.set_modified(True)
+                            except ValueError:
+                                pass
+                        elif property_name == 'data_type' and hasattr(self._current_element, 'data_type'):
+                            from ...core.models.autosar_elements import DataType
+                            try:
+                                enum_value = DataType(value)
+                                setattr(self._current_element, property_name, enum_value)
+                                if hasattr(self.app, 'current_document') and self.app.current_document:
+                                    self.app.current_document.set_modified(True)
+                            except ValueError:
+                                pass
+                        else:
+                            setattr(self._current_element, property_name, value)
+                            if hasattr(self.app, 'current_document') and self.app.current_document:
+                                self.app.current_document.set_modified(True)
+        
+        except Exception as e:
+            print(f"Error saving widget values: {e}")
+    
     def set_element(self, element):
         """Set the current element for editing"""
+        # Save current widget values before switching
+        self._save_current_widget_values()
+        
         self._current_element = element
         self._clear_properties()
         

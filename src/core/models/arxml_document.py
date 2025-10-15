@@ -249,20 +249,32 @@ class ARXMLDocument(QObject):
                 self._file_path = file_path
             
             if not self._file_path:
+                print("No file path specified for saving")
                 return False
+            
+            print(f"Saving document to: {self._file_path}")
+            print(f"Document has {len(self._sw_component_types)} component types")
+            print(f"Document has {len(self._port_interfaces)} port interfaces")
+            print(f"Document has {len(self._compositions)} compositions")
             
             # Generate XML from current elements
             root = self._generate_xml()
+            print(f"Generated XML root: {root.tag}")
             
             # Write to file
             with open(self._file_path, 'wb') as f:
-                f.write(etree.tostring(root, pretty_print=True, encoding='utf-8', xml_declaration=True))
+                xml_content = etree.tostring(root, pretty_print=True, encoding='utf-8', xml_declaration=True)
+                f.write(xml_content)
+                print(f"Wrote {len(xml_content)} bytes to file")
             
             self._modified = False
+            print("Document saved successfully")
             return True
             
         except Exception as e:
             print(f"Error saving document: {e}")
+            import traceback
+            traceback.print_exc()
             return False
     
     def _generate_xml(self) -> etree.Element:

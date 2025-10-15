@@ -259,13 +259,18 @@ class MainWindow(QMainWindow):
         """Save document"""
         if self.app.current_document:
             if self.app.current_document.file_path:
+                print(f"Attempting to save document to: {self.app.current_document.file_path}")
                 if self.app.save_document():
                     self.status_bar.showMessage("Document saved")
+                    print("Document saved successfully")
                 else:
+                    print("Save failed")
                     QMessageBox.critical(self, "Error", "Failed to save document")
             else:
+                print("No file path, using save as")
                 self._save_as_document()
         else:
+            print("No current document")
             QMessageBox.information(self, "Info", "No document to save")
     
     def _save_as_document(self):
@@ -275,11 +280,15 @@ class MainWindow(QMainWindow):
                 self, "Save ARXML Document", "", "ARXML Files (*.arxml);;All Files (*)"
             )
             if file_path:
+                print(f"Attempting to save document as: {file_path}")
                 if self.app.save_document(file_path):
                     self.status_bar.showMessage(f"Saved as: {file_path}")
+                    print("Document saved as successfully")
                 else:
+                    print("Save as failed")
                     QMessageBox.critical(self, "Error", "Failed to save document")
         else:
+            print("No current document for save as")
             QMessageBox.information(self, "Info", "No document to save")
     
     def _undo(self):
