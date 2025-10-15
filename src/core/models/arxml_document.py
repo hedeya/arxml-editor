@@ -322,13 +322,20 @@ class ARXMLDocument(QObject):
             comp_elem = self._composition_to_xml(composition)
             elements.append(comp_elem)
         
-        # Add ECUC elements
+        # Add ECUC elements (these are the editable ones)
         for ecuc_element in self._ecuc_elements:
             ecuc_elem = self._ecuc_element_to_xml(ecuc_element)
             elements.append(ecuc_elem)
         
-        # Add original XML elements (for better preservation)
+        # Add original XML elements only for elements that are NOT already parsed
+        # This ensures we don't duplicate content and preserve unparsed elements
         for xml_elem in self._original_xml_elements:
+            # Check if this element is already represented in our parsed data
+            # by checking if it's an ECUC element that we've already processed
+            if xml_elem.tag.endswith('ECUC-MODULE-CONFIGURATION-VALUES'):
+                # Skip this element as it's already been processed as a parsed ECUC element
+                continue
+            
             # Create a copy of the element to avoid modifying the original
             import copy
             elem_copy = copy.deepcopy(xml_elem)
