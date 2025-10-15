@@ -13,6 +13,9 @@ This directory contains all test files for the ARXML Editor project. The tests a
 - **`test_property_persistence.py`** - Tests property persistence fixes and save with changes
 - **`test_fixes.py`** - Tests the three main fixes: ECUC saving, property persistence, and drag & drop
 - **`test_real_ecuc_save.py`** - Tests loading and saving real ECUC files with complete element preservation
+- **`test_short_name_editing.py`** - Tests SHORT-NAME editing functionality in ECUC files
+- **`test_ecuc_save_fidelity.py`** - Tests ECUC file save fidelity and content preservation
+- **`test_user_scenario_validation.py`** - Tests the exact user scenario for SHORT-NAME editing
 
 ### Schema and Validation Tests
 - **`test_schema_detection.py`** - Tests automatic schema version detection
@@ -68,6 +71,9 @@ python -u test_editing_features.py
 - `test_property_persistence.py` - **MUST PASS** - Property persistence fixes and save with changes
 - `test_fixes.py` - **MUST PASS** - Tests the three main fixes: ECUC saving, property persistence, and drag & drop
 - `test_real_ecuc_save.py` - **MUST PASS** - Tests real ECUC file loading and saving with complete element preservation
+- `test_short_name_editing.py` - **MUST PASS** - Tests SHORT-NAME editing functionality in ECUC files
+- `test_ecuc_save_fidelity.py` - **MUST PASS** - Tests ECUC file save fidelity and content preservation
+- `test_user_scenario_validation.py` - **MUST PASS** - Tests the exact user scenario for SHORT-NAME editing
 
 ### ✅ GUI Tests (Important)
 - `test_gui_loading.py` - GUI initialization
@@ -168,6 +174,11 @@ python -u test_editing_features.py 2>&1 | tee test_output.log
 - ✅ ECUC file complete preservation (14,059+ elements)
 - ✅ Drag and drop visual indicators and validation
 - ✅ Real ECUC file loading and saving with fidelity verification
+- ✅ SHORT-NAME editing functionality in ECUC files
+- ✅ ECUC file save fidelity and content preservation
+- ✅ User scenario validation for SHORT-NAME editing
+- ✅ Property persistence when switching between elements
+- ✅ File integrity and XML structure validation
 
 ### Areas Needing More Tests
 - 🔄 Error handling and edge cases
