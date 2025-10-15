@@ -1,14 +1,6 @@
 # -*- mode: python ; coding: utf-8 -*-
 
-import os
-import sys
-from PyQt6.QtCore import QLibraryInfo
-
 block_cipher = None
-
-# Get PyQt6 data directory
-pyqt6_data_dir = QLibraryInfo.path(QLibraryInfo.LibraryPath.DataPath)
-pyqt6_plugins_dir = QLibraryInfo.path(QLibraryInfo.LibraryPath.PluginsPath)
 
 a = Analysis(
     ['main.py'],
@@ -17,15 +9,8 @@ a = Analysis(
     datas=[
         ('schemas', 'schemas'),
         ('sample.arxml', '.'),
-        # Include PyQt6 platform plugins
-        (os.path.join(pyqt6_plugins_dir, 'platforms'), 'PyQt6/Qt6/plugins/platforms'),
-        (os.path.join(pyqt6_plugins_dir, 'styles'), 'PyQt6/Qt6/plugins/styles'),
-        (os.path.join(pyqt6_plugins_dir, 'imageformats'), 'PyQt6/Qt6/plugins/imageformats'),
-        # Include PyQt6 translations
-        (os.path.join(pyqt6_data_dir, 'translations'), 'PyQt6/Qt6/translations'),
     ],
     hiddenimports=[
-        # XML processing libraries
         'lxml',
         'lxml.etree',
         'lxml._elementpath',
@@ -102,8 +87,55 @@ a = Analysis(
         'xmlschema.validators.atomic.types.primitive.nmtokens',
         'xmlschema.validators.atomic.types.primitive.anytype',
         'xmlschema.validators.atomic.types.primitive.any',
-        
-        # PyQt6 core modules
+        'xmlschema.validators.atomic.types.primitive.anyuri',
+        'xmlschema.validators.atomic.types.primitive.base64binary',
+        'xmlschema.validators.atomic.types.primitive.boolean',
+        'xmlschema.validators.atomic.types.primitive.byte',
+        'xmlschema.validators.atomic.types.primitive.date',
+        'xmlschema.validators.atomic.types.primitive.datetime',
+        'xmlschema.validators.atomic.types.primitive.decimal',
+        'xmlschema.validators.atomic.types.primitive.double',
+        'xmlschema.validators.atomic.types.primitive.duration',
+        'xmlschema.validators.atomic.types.primitive.float',
+        'xmlschema.validators.atomic.types.primitive.gday',
+        'xmlschema.validators.atomic.types.primitive.gmonth',
+        'xmlschema.validators.atomic.types.primitive.gmonthday',
+        'xmlschema.validators.atomic.types.primitive.gyear',
+        'xmlschema.validators.atomic.types.primitive.gyearmonth',
+        'xmlschema.validators.atomic.types.primitive.hexbinary',
+        'xmlschema.validators.atomic.types.primitive.int',
+        'xmlschema.validators.atomic.types.primitive.integer',
+        'xmlschema.validators.atomic.types.primitive.language',
+        'xmlschema.validators.atomic.types.primitive.long',
+        'xmlschema.validators.atomic.types.primitive.name',
+        'xmlschema.validators.atomic.types.primitive.ncname',
+        'xmlschema.validators.atomic.types.primitive.negativeinteger',
+        'xmlschema.validators.atomic.types.primitive.nonnegativeinteger',
+        'xmlschema.validators.atomic.types.primitive.nonpositiveinteger',
+        'xmlschema.validators.atomic.types.primitive.normalizedstring',
+        'xmlschema.validators.atomic.types.primitive.positiveinteger',
+        'xmlschema.validators.atomic.types.primitive.qname',
+        'xmlschema.validators.atomic.types.primitive.short',
+        'xmlschema.validators.atomic.types.primitive.string',
+        'xmlschema.validators.atomic.types.primitive.time',
+        'xmlschema.validators.atomic.types.primitive.token',
+        'xmlschema.validators.atomic.types.primitive.unsignedbyte',
+        'xmlschema.validators.atomic.types.primitive.unsignedint',
+        'xmlschema.validators.atomic.types.primitive.unsignedlong',
+        'xmlschema.validators.atomic.types.primitive.unsignedshort',
+        'xmlschema.validators.atomic.types.primitive.anyuri',
+        'xmlschema.validators.atomic.types.primitive.base64binary',
+        'xmlschema.validators.atomic.types.primitive.hexbinary',
+        'xmlschema.validators.atomic.types.primitive.notation',
+        'xmlschema.validators.atomic.types.primitive.id',
+        'xmlschema.validators.atomic.types.primitive.idref',
+        'xmlschema.validators.atomic.types.primitive.idrefs',
+        'xmlschema.validators.atomic.types.primitive.entities',
+        'xmlschema.validators.atomic.types.primitive.entity',
+        'xmlschema.validators.atomic.types.primitive.nmtoken',
+        'xmlschema.validators.atomic.types.primitive.nmtokens',
+        'xmlschema.validators.atomic.types.primitive.anytype',
+        'xmlschema.validators.atomic.types.primitive.any',
         'PyQt6',
         'PyQt6.QtCore',
         'PyQt6.QtGui',
@@ -114,31 +146,6 @@ a = Analysis(
         'PyQt6.QtTest',
         'PyQt6.QtXml',
         'PyQt6.sip',
-        
-        # PyQt6 platform-specific modules
-        'PyQt6.QtCore.Qt',
-        'PyQt6.QtGui.QFont',
-        'PyQt6.QtGui.QIcon',
-        'PyQt6.QtGui.QKeySequence',
-        'PyQt6.QtGui.QAction',
-        'PyQt6.QtGui.QPen',
-        'PyQt6.QtGui.QBrush',
-        'PyQt6.QtGui.QColor',
-        'PyQt6.QtGui.QPainter',
-        'PyQt6.QtCore.pyqtSignal',
-        'PyQt6.QtCore.QRectF',
-        'PyQt6.QtCore.QPointF',
-        
-        # PyQt6 platform plugins (Windows specific)
-        'PyQt6.Qt6.plugins.platforms',
-        'PyQt6.Qt6.plugins.styles',
-        'PyQt6.Qt6.plugins.imageformats',
-        
-        # Additional PyQt6 modules that might be needed
-        'PyQt6.Qt6',
-        'PyQt6.Qt6.QtCore',
-        'PyQt6.Qt6.QtGui',
-        'PyQt6.Qt6.QtWidgets',
     ],
     hookspath=[],
     hooksconfig={},
