@@ -233,6 +233,9 @@ class MainWindow(QMainWindow):
         
         # Connect tree navigator to property editor
         self.tree_navigator.element_selected.connect(self.property_editor.set_element)
+        
+        # Connect property editor to tree navigator for updates
+        self.property_editor.property_changed.connect(self._on_property_changed)
     
     def _setup_shortcuts(self):
         """Setup keyboard shortcuts"""
@@ -361,6 +364,12 @@ class MainWindow(QMainWindow):
         """Handle command stack changed signal"""
         # Update undo/redo button states
         pass
+    
+    def _on_property_changed(self, element, property_name, new_value):
+        """Handle property changed from property editor"""
+        # Update tree item text if short_name changed
+        if property_name == 'short_name' and isinstance(element, dict):
+            self.tree_navigator.update_item_text(element, new_value)
     
     def closeEvent(self, event):
         """Handle close event"""

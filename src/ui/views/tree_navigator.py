@@ -249,18 +249,89 @@ class TreeNavigator(QTreeWidget):
                 param_item.setData(0, Qt.ItemDataRole.UserRole, param)
     
     def _on_selection_changed(self):
-        """Handle selection changed"""
+        """Handle selection changed and emit the latest model object"""
         current_item = self.currentItem()
-        if current_item:
-            item_data = current_item.data(0, Qt.ItemDataRole.UserRole)
-            if isinstance(item_data, (SwComponentType, Composition, PortInterface, PortPrototype)) or isinstance(item_data, dict):
-                self.element_selected.emit(item_data)
+        if not current_item:
+            return
+        item_data = current_item.data(0, Qt.ItemDataRole.UserRole)
+        doc = getattr(self.app, 'current_document', None)
+        fresh_obj = item_data
+        if doc:
+            # SwComponentType
+            if isinstance(item_data, SwComponentType) and hasattr(item_data, 'short_name'):
+                for obj in doc.sw_component_types:
+                    if getattr(obj, 'short_name', None) == item_data.short_name:
+                        fresh_obj = obj
+                        break
+            # Composition
+            elif isinstance(item_data, Composition) and hasattr(item_data, 'short_name'):
+                for obj in doc.compositions:
+                    if getattr(obj, 'short_name', None) == item_data.short_name:
+                        fresh_obj = obj
+                        break
+            # PortInterface
+            elif isinstance(item_data, PortInterface) and hasattr(item_data, 'short_name'):
+                for obj in doc.port_interfaces:
+                    if getattr(obj, 'short_name', None) == item_data.short_name:
+                        fresh_obj = obj
+                        break
+            # ServiceInterface
+            elif hasattr(doc, 'service_interfaces') and isinstance(item_data, type(next(iter(doc.service_interfaces), None))):
+                # Use short_name for matching
+                for obj in doc.service_interfaces:
+                    if getattr(obj, 'short_name', None) == getattr(item_data, 'short_name', None):
+                        fresh_obj = obj
+                        break
+            # ECUC element (dict, including nested containers)
+            elif isinstance(item_data, dict) and 'short_name' in item_data and 'type' in item_data and hasattr(doc, 'ecuc_elements'):
+                def find_ecuc_dict_recursive(dict_list, short_name, type_):
+                    for d in dict_list:
+                        if isinstance(d, dict) and d.get('short_name') == short_name and d.get('type') == type_:
+                            return d
+                        # Search nested containers
+                        if isinstance(d, dict) and 'containers' in d and isinstance(d['containers'], list):
+                            found = find_ecuc_dict_recursive(d['containers'], short_name, type_)
+                            if found:
+                                return found
+                    return None
+                found = find_ecuc_dict_recursive(doc.ecuc_elements, item_data['short_name'], item_data['type'])
+                if found:
+                    fresh_obj = found
+        self.element_selected.emit(fresh_obj)
     
     def _on_item_double_clicked(self, item, column):
         """Handle item double click"""
         item_data = item.data(0, Qt.ItemDataRole.UserRole)
         if isinstance(item_data, (SwComponentType, Composition, PortInterface, PortPrototype)):
             self.element_double_clicked.emit(item_data)
+    
+    def update_item_text(self, element, new_short_name):
+        """Update the tree item text when an element's short_name changes"""
+        # Find the item that contains this element
+        for i in range(self.topLevelItemCount()):
+            item = self.topLevelItem(i)
+            if self._update_item_recursive(item, element, new_short_name):
+                return True
+        return False
+    
+    def _update_item_recursive(self, item, element, new_short_name):
+        """Recursively update item text"""
+        if not item:
+            return False
+        
+        item_data = item.data(0, Qt.ItemDataRole.UserRole)
+        
+        # Check if this is the element we're looking for
+        if isinstance(item_data, dict) and item_data is element:
+            item.setText(0, new_short_name)
+            return True
+        
+        # Check children
+        for i in range(item.childCount()):
+            if self._update_item_recursive(item.child(i), element, new_short_name):
+                return True
+        
+        return False
     
     def _add_application_component(self):
         """Add application component type"""

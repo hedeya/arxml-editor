@@ -85,18 +85,12 @@ class PropertyEditor(QWidget):
     
     def _save_current_widget_values(self):
         """Save current widget values to the element before switching"""
-        print(f"DEBUG: _save_current_widget_values called")
-        print(f"  - _current_element: {self._current_element}")
-        print(f"  - _property_widgets: {list(self._property_widgets.keys())}")
-        
         if not self._current_element or not self._property_widgets:
-            print("  - No current element or property widgets, returning")
             return
         
         try:
             # Save values from all property widgets
             for property_name, widget in self._property_widgets.items():
-                print(f"  - Processing widget: {property_name}")
                 if hasattr(widget, 'text'):
                     # QLineEdit, QTextEdit
                     if hasattr(widget, 'toPlainText'):
@@ -106,19 +100,13 @@ class PropertyEditor(QWidget):
                         # QLineEdit
                         value = widget.text()
                     
-                    print(f"    - Widget value: '{value}'")
-                    print(f"    - Current element value: '{self._current_element.get(property_name, '')}'")
-                    
                     # Update the element (handle both objects and dictionaries)
                     if isinstance(self._current_element, dict):
                         # Dictionary (ECUC elements)
-                        old_value = self._current_element.get(property_name, '')
                         self._current_element[property_name] = value
-                        print(f"    - Updated {property_name}: '{old_value}' -> '{value}'")
                     elif hasattr(self._current_element, property_name):
                         # Object with attributes
                         setattr(self._current_element, property_name, value)
-                        print(f"    - Updated {property_name}: '{value}'")
                     
                     # Mark document as modified
                     if hasattr(self.app, 'current_document') and self.app.current_document:
@@ -186,19 +174,13 @@ class PropertyEditor(QWidget):
     
     def set_element(self, element):
         """Set the current element for editing"""
-        print(f"DEBUG: set_element called with element: {element}")
-        print(f"  - Current _current_element: {self._current_element}")
-        
         # Save current widget values before switching
-        print("DEBUG: Calling _save_current_widget_values()")
         self._save_current_widget_values()
         
         # Clear properties after saving values
-        print("DEBUG: Calling _clear_properties()")
         self._clear_properties()
         
         # Set the current element
-        print(f"DEBUG: Setting _current_element to: {element}")
         self._current_element = element
         
         if element is None:
