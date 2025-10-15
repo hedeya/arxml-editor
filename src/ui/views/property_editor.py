@@ -174,9 +174,13 @@ class PropertyEditor(QWidget):
     
     def set_element(self, element):
         """Set the current element for editing"""
-        # Clear properties (no need to save - real-time updates handle this)
+        # Save current widget values before switching
+        self._save_current_widget_values()
+        
+        # Clear properties after saving values
         self._clear_properties()
         
+        # Set the current element
         self._current_element = element
         
         if element is None:
@@ -518,11 +522,11 @@ class PropertyEditor(QWidget):
         short_name_edit = QLineEdit(ecuc_element.get('short_name', ''))
         # Use editingFinished signal for better validation
         short_name_edit.editingFinished.connect(
-            lambda: self._on_ecuc_property_changed(ecuc_element, "short_name", short_name_edit.text())
+            lambda: self._on_ecuc_property_changed(self._current_element, "short_name", short_name_edit.text())
         )
         # Also connect textChanged for real-time updates
         short_name_edit.textChanged.connect(
-            lambda text: self._on_ecuc_property_changed(ecuc_element, "short_name", text)
+            lambda text: self._on_ecuc_property_changed(self._current_element, "short_name", text)
         )
         basic_layout.addRow("Short Name:", short_name_edit)
         self._property_widgets["short_name"] = short_name_edit
