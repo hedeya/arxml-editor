@@ -8,6 +8,7 @@ This directory contains all test files for the ARXML Editor project. The tests a
 - **`test_application.py`** - Tests the main application controller and document loading
 - **`test_arxml_editor.py`** - Tests the complete ARXML editor functionality
 - **`test_editing_features.py`** - Tests add/edit/remove/save functionality
+- **`test_new_features.py`** - Tests enhanced user interaction features (editable properties, drag & drop, delete confirmation, save as)
 
 ### Schema and Validation Tests
 - **`test_schema_detection.py`** - Tests automatic schema version detection
@@ -58,6 +59,7 @@ python -u test_editing_features.py
 - `test_editing_features.py` - **MUST PASS** - Core editing functionality
 - `test_application.py` - **MUST PASS** - Application startup and loading
 - `test_schema_detection.py` - **MUST PASS** - Schema detection
+- `test_new_features.py` - **MUST PASS** - Enhanced user interaction features
 
 ### ✅ GUI Tests (Important)
 - `test_gui_loading.py` - GUI initialization
@@ -152,6 +154,7 @@ python -u test_editing_features.py 2>&1 | tee test_output.log
 - ✅ GUI component functionality
 - ✅ ECUC file support
 - ✅ Tree navigation and selection
+- ✅ Enhanced user interaction features (editable properties, drag & drop, delete confirmation, save as)
 
 ### Areas Needing More Tests
 - 🔄 Error handling and edge cases
