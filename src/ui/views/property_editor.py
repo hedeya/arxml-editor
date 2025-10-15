@@ -178,8 +178,10 @@ class PropertyEditor(QWidget):
         # Save current widget values before switching
         self._save_current_widget_values()
         
-        self._current_element = element
+        # Clear properties after saving values
         self._clear_properties()
+        
+        self._current_element = element
         
         if element is None:
             self._show_empty_state()
