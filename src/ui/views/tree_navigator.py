@@ -306,7 +306,7 @@ class TreeNavigator(QTreeWidget):
     
     def contextMenuEvent(self, event):
         """Handle context menu event"""
-        item = self.itemAt(event.pos())
+        item = self.itemAt(event.position().toPoint())
         if not item:
             return
         
@@ -343,7 +343,7 @@ class TreeNavigator(QTreeWidget):
             menu.addAction(delete_action)
         
         if menu.actions():
-            menu.exec(self.mapToGlobal(event.pos()))
+            menu.exec(self.mapToGlobal(event.position().toPoint()))
     
     def _add_component_type(self):
         """Add new component type"""
@@ -495,13 +495,6 @@ class TreeNavigator(QTreeWidget):
         else:
             event.ignore()
     
-    def dragMoveEvent(self, event):
-        """Handle drag move event"""
-        if event.source() == self:
-            event.accept()
-        else:
-            event.ignore()
-    
     def dropEvent(self, event):
         """Handle drop event"""
         if event.source() != self:
@@ -515,7 +508,7 @@ class TreeNavigator(QTreeWidget):
             return
         
         # Get the target item
-        target_item = self.itemAt(event.pos())
+        target_item = self.itemAt(event.position().toPoint())
         if not target_item:
             event.ignore()
             return
@@ -574,7 +567,7 @@ class TreeNavigator(QTreeWidget):
         """Handle drag move event"""
         if event.source() == self:
             # Get the item under the cursor
-            item = self.itemAt(event.pos())
+            item = self.itemAt(event.position().toPoint())
             if item:
                 # Set drop indicator
                 self.setDropIndicatorShown(True)
@@ -607,7 +600,7 @@ class TreeNavigator(QTreeWidget):
                 return
             
             # Get the target item
-            target_item = self.itemAt(event.pos())
+            target_item = self.itemAt(event.position().toPoint())
             if not target_item:
                 event.ignore()
                 return
