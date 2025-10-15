@@ -101,34 +101,52 @@ class PropertyEditor(QWidget):
                         # QLineEdit
                         value = widget.text()
                     
-                    # Update the element
-                    if hasattr(self._current_element, property_name):
+                    # Update the element (handle both objects and dictionaries)
+                    if isinstance(self._current_element, dict):
+                        # Dictionary (ECUC elements)
+                        self._current_element[property_name] = value
+                    elif hasattr(self._current_element, property_name):
+                        # Object with attributes
                         setattr(self._current_element, property_name, value)
-                        # Mark document as modified
-                        if hasattr(self.app, 'current_document') and self.app.current_document:
-                            self.app.current_document.set_modified(True)
+                    
+                    # Mark document as modified
+                    if hasattr(self.app, 'current_document') and self.app.current_document:
+                        self.app.current_document.set_modified(True)
                 
                 elif hasattr(widget, 'isChecked'):
                     # QCheckBox
                     value = widget.isChecked()
-                    if hasattr(self._current_element, property_name):
+                    if isinstance(self._current_element, dict):
+                        # Dictionary (ECUC elements)
+                        self._current_element[property_name] = value
+                    elif hasattr(self._current_element, property_name):
+                        # Object with attributes
                         setattr(self._current_element, property_name, value)
-                        if hasattr(self.app, 'current_document') and self.app.current_document:
-                            self.app.current_document.set_modified(True)
+                    
+                    if hasattr(self.app, 'current_document') and self.app.current_document:
+                        self.app.current_document.set_modified(True)
                 
                 elif hasattr(widget, 'value'):
                     # QSpinBox, QDoubleSpinBox
                     value = widget.value()
-                    if hasattr(self._current_element, property_name):
+                    if isinstance(self._current_element, dict):
+                        # Dictionary (ECUC elements)
+                        self._current_element[property_name] = value
+                    elif hasattr(self._current_element, property_name):
+                        # Object with attributes
                         setattr(self._current_element, property_name, value)
-                        if hasattr(self.app, 'current_document') and self.app.current_document:
-                            self.app.current_document.set_modified(True)
+                    
+                    if hasattr(self.app, 'current_document') and self.app.current_document:
+                        self.app.current_document.set_modified(True)
                 
                 elif hasattr(widget, 'currentText'):
                     # QComboBox
                     value = widget.currentText()
-                    if hasattr(self._current_element, property_name):
-                        # Handle enum types
+                    if isinstance(self._current_element, dict):
+                        # Dictionary (ECUC elements)
+                        self._current_element[property_name] = value
+                    elif hasattr(self._current_element, property_name):
+                        # Object with attributes - Handle enum types
                         if property_name == 'port_type' and hasattr(self._current_element, 'port_type'):
                             from ...core.models.autosar_elements import PortType
                             try:
