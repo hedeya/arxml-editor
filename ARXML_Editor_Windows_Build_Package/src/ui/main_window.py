@@ -253,13 +253,10 @@ class MainWindow(QMainWindow):
             self, "Open ARXML Document", "", "ARXML Files (*.arxml);;All Files (*)"
         )
         if file_path:
-            print(f"Attempting to open: {file_path}")
             if self.app.load_document(file_path):
                 self.status_bar.showMessage(f"Opened: {file_path}")
-                print(f"Successfully opened: {file_path}")
             else:
-                print(f"Failed to open: {file_path}")
-                QMessageBox.critical(self, "Error", f"Failed to open document:\n{file_path}\n\nCheck the console for detailed error messages.")
+                QMessageBox.critical(self, "Error", "Failed to open document")
     
     def _save_document(self):
         """Save document"""
@@ -269,8 +266,6 @@ class MainWindow(QMainWindow):
                 if self.app.save_document():
                     self.status_bar.showMessage("Document saved")
                     print("Document saved successfully")
-                    # Update window title to remove modified indicator
-                    self._update_title()
                 else:
                     print("Save failed")
                     QMessageBox.critical(self, "Error", "Failed to save document")
@@ -292,8 +287,6 @@ class MainWindow(QMainWindow):
                 if self.app.save_document(file_path):
                     self.status_bar.showMessage(f"Saved as: {file_path}")
                     print("Document saved as successfully")
-                    # Update window title to remove modified indicator
-                    self._update_title()
                 else:
                     print("Save as failed")
                     QMessageBox.critical(self, "Error", "Failed to save document")
@@ -355,9 +348,6 @@ class MainWindow(QMainWindow):
             self.app.validation_service.validate_document(self.app.current_document)
         
         self.validation_list.refresh()
-        
-        # Update window title
-        self._update_title()
     
     def _on_validation_changed(self):
         """Handle validation changed signal"""
@@ -375,73 +365,13 @@ class MainWindow(QMainWindow):
         # Update undo/redo button states
         pass
     
-    def _on_property_changed(self, element, property_name: str, new_value):
-        """Handle property changes"""
-        # Mark document as modified
-        if hasattr(self.app, 'current_document') and self.app.current_document:
-            self.app.current_document.set_modified(True)
-        
-        # If short_name changed, update the tree display
-        if property_name == 'short_name':
-            self.tree_navigator.update_element_name_in_tree(element, new_value)
-        
-        # Update window title
-        self._update_title()
-    
-    def _update_title(self):
-        """Update window title based on document state"""
-        title = "ARXML Editor"
-        
-        if hasattr(self.app, 'current_document') and self.app.current_document:
-            if self.app.current_document.file_path:
-                filename = self.app.current_document.file_path.split('/')[-1]
-                title = f"{filename} - ARXML Editor"
-                
-                # Add modified indicator
-                if self.app.current_document.modified:
-                    title = f"*{title}"
-            else:
-                title = "Untitled - ARXML Editor"
-        
-        self.setWindowTitle(title)
+    def _on_property_changed(self, element, property_name, new_value):
+        """Handle property changed from property editor"""
+        # Update tree item text if short_name changed
+        if property_name == 'short_name' and isinstance(element, dict):
+            self.tree_navigator.update_item_text(element, new_value)
     
     def closeEvent(self, event):
-        """Handle close event with save confirmation"""
-        if self.app.current_document and self.app.current_document.modified:
-            # Document has unsaved changes, ask user what to do
-            reply = QMessageBox.question(
-                self,
-                "Save Changes?",
-                "The document has been modified. Do you want to save your changes before closing?",
-                QMessageBox.StandardButton.Save | 
-                QMessageBox.StandardButton.Discard | 
-                QMessageBox.StandardButton.Cancel,
-                QMessageBox.StandardButton.Save
-            )
-            
-            if reply == QMessageBox.StandardButton.Save:
-                # Try to save the document
-                if self._save_document():
-                    event.accept()
-                else:
-                    # Save failed, ask if user wants to close anyway
-                    reply2 = QMessageBox.question(
-                        self,
-                        "Save Failed",
-                        "Failed to save the document. Do you want to close without saving?",
-                        QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-                        QMessageBox.StandardButton.No
-                    )
-                    if reply2 == QMessageBox.StandardButton.Yes:
-                        event.accept()
-                    else:
-                        event.ignore()
-            elif reply == QMessageBox.StandardButton.Discard:
-                # User chose to discard changes
-                event.accept()
-            else:
-                # User chose to cancel
-                event.ignore()
-        else:
-            # No unsaved changes, close normally
-            event.accept()
+        """Handle close event"""
+        # Add save confirmation if needed
+        event.accept()

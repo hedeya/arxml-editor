@@ -32,17 +32,9 @@ class ARXMLParser(QObject):
     def parse_arxml_file(self, file_path: str) -> Optional[etree.Element]:
         """Parse ARXML file and return root element"""
         try:
-            print(f"Parsing ARXML file: {file_path}")
-            
             # Parse XML file
             tree = etree.parse(file_path)
             root = tree.getroot()
-            
-            print(f"Root element: {root.tag}")
-            if hasattr(root, 'nsmap'):
-                print(f"Root namespaces: {root.nsmap}")
-            else:
-                print("Root namespaces: Not available (using standard library)")
             
             # Auto-detect and set schema version if schema service is available
             if self._schema_service:
@@ -52,18 +44,11 @@ class ARXMLParser(QObject):
             
             # Validate namespace
             if not self._is_valid_arxml(root):
-                print(f"ARXML validation failed for root: {root.tag}")
-                if hasattr(root, 'nsmap'):
-                    print(f"Namespaces: {root.nsmap}")
-                else:
-                    print("Namespaces: Not available (using standard library)")
                 raise ValueError("Invalid ARXML namespace or structure")
             
-            print("ARXML file parsed successfully")
             return root
         
         except Exception as e:
-            print(f"Error parsing ARXML file: {e}")
             self.parse_completed.emit(False, f"Parse error: {str(e)}")
             return None
     
@@ -102,28 +87,12 @@ class ARXMLParser(QObject):
     def _is_valid_arxml(self, root: etree.Element) -> bool:
         """Check if root element is valid ARXML"""
         # Check namespace - be more flexible with namespace validation
-        namespace_uri = None
-        
-        # Try to get namespace from nsmap (lxml) or from tag (standard library)
-        if hasattr(root, 'nsmap') and root.nsmap:
-            namespace_uri = root.nsmap.get(None)
-        elif '}' in root.tag:
-            namespace_uri = root.tag.split('}')[0][1:]
-        
-        if not namespace_uri:
-            # If no namespace found, check if it's just "AUTOSAR" (some files might not have namespaces)
-            tag_name = root.tag.split('}')[-1] if '}' in root.tag else root.tag
-            return tag_name == "AUTOSAR"
-        
-        # Check if it's an AUTOSAR namespace (more flexible)
-        if not (namespace_uri.startswith('http://autosar.org/schema/') or 
-                namespace_uri.startswith('http://autosar.org/') or
-                'autosar' in namespace_uri.lower()):
+        namespace_uri = root.nsmap.get(None)
+        if not namespace_uri or not namespace_uri.startswith('http://autosar.org/schema/'):
             return False
         
-        # Check root element name (more flexible)
-        tag_name = root.tag.split('}')[-1] if '}' in root.tag else root.tag
-        if tag_name != "AUTOSAR":
+        # Check root element name
+        if root.tag != f"{{{namespace_uri}}}AUTOSAR":
             return False
         
         return True
@@ -133,8 +102,7 @@ class ARXMLParser(QObject):
         component_types = []
         
         # Find all AR-PACKAGE elements
-        # Use standard library findall instead of xpath
-        packages = root.findall('.//{http://autosar.org/schema/r4.0}AR-PACKAGE')
+        packages = root.xpath('.//ar:AR-PACKAGE', namespaces=self._namespaces)
         
         for package in packages:
             # Find APPLICATION-SW-COMPONENT-TYPE elements
@@ -248,12 +216,8 @@ class ARXMLParser(QObject):
             if admin_data_elem is not None:
                 ecuc_data['admin_data'] = self._parse_admin_data(admin_data_elem)
             
-            # Extract direct child ECUC-CONTAINER-VALUE elements only
-            # Extract top-level ECUC-CONTAINER-VALUE elements which are
-            # typically wrapped under a <CONTAINERS> element in many ARXML files.
-            # Use the explicit path to CONTAINERS to avoid picking up deeper
-            # descendant containers as separate top-level entries.
-            containers = elem.xpath('./ar:CONTAINERS/ar:ECUC-CONTAINER-VALUE', namespaces=self._namespaces)
+            # Extract ECUC-CONTAINER-VALUE elements
+            containers = elem.xpath('.//ar:ECUC-CONTAINER-VALUE', namespaces=self._namespaces)
             for container in containers:
                 container_data = self._parse_ecuc_container_value(container)
                 if container_data:

@@ -42,13 +42,8 @@ class TreeNavigator(QTreeWidget):
         # Configure header
         header = self.header()
         header.setStretchLastSection(False)
-        # Make columns manually resizable
-        header.setSectionResizeMode(0, QHeaderView.ResizeMode.Interactive)
-        header.setSectionResizeMode(1, QHeaderView.ResizeMode.Interactive)
-        
-        # Set reasonable default column widths
-        self.setColumnWidth(0, 300)  # Name column - wide enough for names to be visible
-        self.setColumnWidth(1, 150)  # Type column - reasonable width for types
+        header.setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
+        header.setSectionResizeMode(1, QHeaderView.ResizeMode.ResizeToContents)
         
         # Enable drag and drop
         self.setDragDropMode(QTreeWidget.DragDropMode.InternalMove)
@@ -175,29 +170,12 @@ class TreeNavigator(QTreeWidget):
             self.ecuc_elements_item.setText(0, "ECUC Elements")
             self.ecuc_elements_item.setText(1, f"{len(self.app.current_document.ecuc_elements)} items")
             self.ecuc_elements_item.setData(0, Qt.ItemDataRole.UserRole, "ecuc_elements")
-            # Debug: show how many top-level ECUC elements and basic structure
-            try:
-                print(f"[TreeNavigator] refresh: {len(self.app.current_document.ecuc_elements)} ECUC elements")
-                for e in self.app.current_document.ecuc_elements:
-                    try:
-                        print(f"  id={id(e)} short_name='{e.get('short_name')}' type='{e.get('type')}' containers={len(e.get('containers', []))} parameters={len(e.get('parameters', []))}")
-                    except Exception:
-                        print(f"  id={id(e)} (unreadable)")
-            except Exception:
-                pass
-
+            
             for ecuc_element in self.app.current_document.ecuc_elements:
                 self._add_ecuc_element_item(ecuc_element)
         
         # Expand all root items
         self.expandAll()
-        
-        # Pre-select the first root item if available
-        if self.topLevelItemCount() > 0:
-            first_item = self.topLevelItem(0)
-            self.setCurrentItem(first_item)
-            # Scroll to ensure the selected item is visible
-            self.scrollToItem(first_item)
     
     
     def _add_component_type_item(self, component_type: SwComponentType):
@@ -206,15 +184,13 @@ class TreeNavigator(QTreeWidget):
         item.setText(0, component_type.short_name)
         item.setText(1, component_type.category.value)
         item.setData(0, Qt.ItemDataRole.UserRole, component_type)
-        item.setData(0, Qt.ItemDataRole.UserRole + 1, component_type)
-
+        
         # Add ports as children
         for port in component_type.ports:
             port_item = QTreeWidgetItem(item)
             port_item.setText(0, port.short_name)
             port_item.setText(1, port.port_type.value)
             port_item.setData(0, Qt.ItemDataRole.UserRole, port)
-            port_item.setData(0, Qt.ItemDataRole.UserRole + 1, port)
     
     def _add_composition_item(self, composition: Composition):
         """Add composition to tree"""
@@ -222,15 +198,13 @@ class TreeNavigator(QTreeWidget):
         item.setText(0, composition.short_name)
         item.setText(1, "Composition")
         item.setData(0, Qt.ItemDataRole.UserRole, composition)
-        item.setData(0, Qt.ItemDataRole.UserRole + 1, composition)
-
+        
         # Add component types as children
         for component_type in composition.component_types:
             comp_item = QTreeWidgetItem(item)
             comp_item.setText(0, component_type.short_name)
             comp_item.setText(1, component_type.category.value)
             comp_item.setData(0, Qt.ItemDataRole.UserRole, component_type)
-            comp_item.setData(0, Qt.ItemDataRole.UserRole + 1, component_type)
     
     def _add_port_interface_item(self, port_interface: PortInterface):
         """Add port interface to tree"""
@@ -238,15 +212,13 @@ class TreeNavigator(QTreeWidget):
         item.setText(0, port_interface.short_name)
         item.setText(1, "Port Interface")
         item.setData(0, Qt.ItemDataRole.UserRole, port_interface)
-        item.setData(0, Qt.ItemDataRole.UserRole + 1, port_interface)
-
+        
         # Add data elements as children
         for data_element in port_interface.data_elements:
             data_item = QTreeWidgetItem(item)
             data_item.setText(0, data_element.short_name)
             data_item.setText(1, data_element.data_type.value)
             data_item.setData(0, Qt.ItemDataRole.UserRole, data_element)
-            data_item.setData(0, Qt.ItemDataRole.UserRole + 1, data_element)
     
     def _add_service_interface_item(self, service_interface):
         """Add service interface to tree"""
@@ -254,273 +226,78 @@ class TreeNavigator(QTreeWidget):
         item.setText(0, service_interface.short_name)
         item.setText(1, "Service Interface")
         item.setData(0, Qt.ItemDataRole.UserRole, service_interface)
-        item.setData(0, Qt.ItemDataRole.UserRole + 1, service_interface)
     
     def _add_ecuc_element_item(self, ecuc_element: dict):
         """Add ECUC element to tree"""
-        # Use the exact element instance passed to us to ensure proper matching
-        # The canonicalization logic was causing issues with element identity matching
-
         item = QTreeWidgetItem(self.ecuc_elements_item)
-        short = ecuc_element.get('short_name', '<no-short-name>')
-        typ = ecuc_element.get('type', '<no-type>')
-        item.setText(0, short)
-        item.setText(1, typ)
-        # Store the element ID instead of the element itself to avoid Qt copying issues
-        element_id = id(ecuc_element)
-        item.setData(0, Qt.ItemDataRole.UserRole, element_id)
-        item.setData(0, Qt.ItemDataRole.UserRole + 1, element_id)
-
-        # Debug: log creation (can be removed in production)
-        # print(f"[TreeNavigator] add_ecuc_element id={id(ecuc_element)} short_name='{short}' type='{typ}' containers={len(ecuc_element.get('containers', []))} parameters={len(ecuc_element.get('parameters', []))}")
-
-        # Add containers (recursively) as children
+        item.setText(0, ecuc_element['short_name'])
+        item.setText(1, ecuc_element['type'])
+        item.setData(0, Qt.ItemDataRole.UserRole, ecuc_element)
+        
+        # Add containers as children
         for container in ecuc_element.get('containers', []):
-            self._add_ecuc_container_item(item, container, depth=1)
-
-    def _add_ecuc_container_item(self, parent_item: QTreeWidgetItem, container: dict, depth: int = 0):
-        """Recursively add an ECUC container and its contents to parent_item"""
-        # Canonicalize container instance to the document-owned dict where possible
-        try:
-            doc = getattr(self.app, 'current_document', None)
-            if doc:
-                for doc_elem in doc.ecuc_elements:
-                    # search for the container inside each top-level element
-                    if doc_elem is container:
-                        container = doc_elem
-                        break
-                    found = self._find_dict_in(doc_elem, container)
-                    if found is not None:
-                        container = found
-                        break
-        except Exception:
-            pass
-
-        container_item = QTreeWidgetItem(parent_item)
-        short = container.get('short_name', '<no-short-name>')
-        typ = container.get('type', 'ECUC-CONTAINER-VALUE')
-        container_item.setText(0, short)
-        container_item.setText(1, typ)
-        # Store container ID instead of object for consistency with main elements
-        container_id = id(container)
-        container_item.setData(0, Qt.ItemDataRole.UserRole, container_id)
-        container_item.setData(0, Qt.ItemDataRole.UserRole + 1, container_id)
-
-        # Debug: log creation with depth
-        try:
-            print(f"[TreeNavigator] {'  '*depth}add_container depth={depth} id={id(container)} short_name='{short}' type='{typ}' containers={len(container.get('containers', []))} parameters={len(container.get('parameters', []))}")
-        except Exception:
-            pass
-
-        # Add nested containers recursively
-        for nested in container.get('containers', []):
-            # Pass nested through the same canonicalization when adding
-            self._add_ecuc_container_item(container_item, nested, depth=depth+1)
-
-        # Add parameters as children of this container
-        for param in container.get('parameters', []):
-            param_item = QTreeWidgetItem(container_item)
-            param_item.setText(0, param.get('short_name', ''))
-            param_item.setText(1, param.get('type', 'ECUC-PARAMETER-VALUE'))
-            # Canonicalize parameter dicts as well
-            try:
-                doc = getattr(self.app, 'current_document', None)
-                if doc:
-                    for doc_elem in doc.ecuc_elements:
-                        found = self._find_dict_in(doc_elem, param)
-                        if found is not None:
-                            param = found
-                            break
-            except Exception:
-                pass
-            param_item.setData(0, Qt.ItemDataRole.UserRole, param)
-            param_item.setData(0, Qt.ItemDataRole.UserRole + 1, param)
-            try:
-                print(f"[TreeNavigator] {'  '*(depth+1)}add_param depth={depth+1} id={id(param)} short_name='{param.get('short_name')}' type='{param.get('type')}'")
-            except Exception:
-                pass
-        
-        # Also handle any other list-valued child keys that may contain dict children
-        for key, val in container.items():
-            if key in ('short_name', 'type', 'definition_ref', 'parameters', 'containers', 'admin_data'):
-                continue
-            if isinstance(val, list) and val and isinstance(val[0], dict):
-                # Add a grouping node for this key
-                group_item = QTreeWidgetItem(container_item)
-                group_item.setText(0, key)
-                group_item.setText(1, 'group')
-                group_item.setData(0, Qt.ItemDataRole.UserRole, key)
-                for child in val:
-                    # If child looks like a container, recurse, else add as param-like
-                    if isinstance(child, dict) and 'short_name' in child:
-                        # Attempt to canonicalize this child to the document instance
-                        try:
-                            doc = getattr(self.app, 'current_document', None)
-                            if doc:
-                                for doc_elem in doc.ecuc_elements:
-                                    found = self._find_dict_in(doc_elem, child)
-                                    if found is not None:
-                                        child = found
-                                        break
-                        except Exception:
-                            pass
-
-                        if child.get('type', '').endswith('CONTAINER') or child.get('type', '').endswith('CONTAINER-VALUE'):
-                            self._add_ecuc_container_item(group_item, child)
-                        else:
-                            child_item = QTreeWidgetItem(group_item)
-                            child_item.setText(0, child.get('short_name', ''))
-                            child_item.setText(1, child.get('type', 'ECUC-CHILD'))
-                            child_item.setData(0, Qt.ItemDataRole.UserRole, child)
-                            child_item.setData(0, Qt.ItemDataRole.UserRole + 1, child)
-
-    def _find_element_by_id(self, container: dict, target_id: int):
-        """Recursively search for element with target_id inside container"""
-        # Identity match
-        if id(container) == target_id:
-            return container
-
-        # Search direct values
-        for key, val in container.items():
-            if id(val) == target_id:
-                return val
-            if isinstance(val, dict):
-                found = self._find_element_by_id(val, target_id)
-                if found is not None:
-                    return found
-            elif isinstance(val, list):
-                for item in val:
-                    if id(item) == target_id:
-                        return item
-                    if isinstance(item, dict):
-                        found = self._find_element_by_id(item, target_id)
-                        if found is not None:
-                            return found
-        return None
-
-    def _find_dict_in(self, container: dict, target: dict):
-        """Recursively search for target dict inside container; return the found dict or None.
-
-        This mirrors the search used in the PropertyEditor so the tree can resolve
-        transient dicts to the authoritative instances stored in the document.
-        """
-        # Identity match
-        if container is target:
-            return container
-
-        # Search direct values
-        for key, val in container.items():
-            if val is target:
-                return val
-            if isinstance(val, dict):
-                found = self._find_dict_in(val, target)
-                if found is not None:
-                    return found
-            elif isinstance(val, list):
-                for item in val:
-                    if item is target:
-                        return item
-                    if isinstance(item, dict):
-                        found = self._find_dict_in(item, target)
-                        if found is not None:
-                            return found
-
-        # Fallback shallow match by short_name/type
-        try:
-            tname = target.get('short_name')
-            ttype = target.get('type')
-            if tname:
-                for key, val in container.items():
-                    if isinstance(val, list):
-                        for item in val:
-                            if isinstance(item, dict) and item.get('short_name') == tname and item.get('type') == ttype:
-                                return item
-        except Exception:
-            pass
-
-        return None
-    
-    def find_tree_item_by_element(self, element):
-        """Find tree item that corresponds to the given element"""
-        element_id = id(element)
-        
-        def search_item(item):
-            # Check both UserRole and UserRole+1 data for our element ID
-            item_data = item.data(0, Qt.ItemDataRole.UserRole)
-            item_data_alt = item.data(0, Qt.ItemDataRole.UserRole + 1)
+            container_item = QTreeWidgetItem(item)
+            container_item.setText(0, container['short_name'])
+            container_item.setText(1, container['type'])
+            container_item.setData(0, Qt.ItemDataRole.UserRole, container)
             
-            # Check if stored ID matches our element ID
-            if item_data == element_id or item_data_alt == element_id:
-                return item
-            
-            # Search children recursively
-            for i in range(item.childCount()):
-                child_result = search_item(item.child(i))
-                if child_result:
-                    return child_result
-            return None
-        
-        # Search all top-level items
-        for i in range(self.topLevelItemCount()):
-            result = search_item(self.topLevelItem(i))
-            if result:
-                return result
-        return None
-    
-    def update_element_name_in_tree(self, element, new_name):
-        """Update the display name of an element in the tree"""
-        item = self.find_tree_item_by_element(element)
-        if item:
-            item.setText(0, new_name)
-            # Debug: show update (can be removed in production)
-            # print(f"[TreeNavigator] Updated tree item name to '{new_name}' for element id={id(element)}")
-            return True
-        else:
-            # Debug: show error (can be removed in production)
-            # print(f"[TreeNavigator] Could not find tree item for element id={id(element)}")
-            return False
+            # Add parameters as children of containers
+            for param in container.get('parameters', []):
+                param_item = QTreeWidgetItem(container_item)
+                param_item.setText(0, param['short_name'])
+                param_item.setText(1, param['type'])
+                param_item.setData(0, Qt.ItemDataRole.UserRole, param)
     
     def _on_selection_changed(self):
         """Handle selection changed and emit the latest model object"""
         current_item = self.currentItem()
         if not current_item:
             return
-        # Get the element ID stored in the tree item
         item_data = current_item.data(0, Qt.ItemDataRole.UserRole)
-        item_data_alt = current_item.data(0, Qt.ItemDataRole.UserRole + 1)
-
-        element_id = item_data_alt if item_data_alt is not None else item_data
-
-        # Debug: show stored element ID (can be removed in production)
-        # print(f"[TreeNavigator] item data[UserRole] id={element_id} type={type(element_id).__name__}")
-
-        # Find the element by ID
-        emitted = None
-        if hasattr(self.app, 'current_document') and self.app.current_document:
-            for doc_elem in self.app.current_document.ecuc_elements:
-                if id(doc_elem) == element_id:
-                    emitted = doc_elem
-                    break
-                # Also search nested containers
-                found = self._find_element_by_id(doc_elem, element_id)
-                if found is not None:
-                    emitted = found
-                    break
-
-        if emitted is not None:
-            # Debug: show emitted element (can be removed in production)
-            # try:
-            #     if isinstance(emitted, dict):
-            #         print(f"[TreeNavigator] emitting id={id(emitted)} short_name='{emitted.get('short_name')}'")
-            #     else:
-            #         print(f"[TreeNavigator] emitting id={id(emitted)} type={type(emitted).__name__}")
-            # except Exception:
-            #     pass
-            self.element_selected.emit(emitted)
-        else:
-            # Debug: show error (can be removed in production)
-            # print(f"[TreeNavigator] Could not find element with ID {element_id}")
-            pass
+        doc = getattr(self.app, 'current_document', None)
+        fresh_obj = item_data
+        if doc:
+            # SwComponentType
+            if isinstance(item_data, SwComponentType) and hasattr(item_data, 'short_name'):
+                for obj in doc.sw_component_types:
+                    if getattr(obj, 'short_name', None) == item_data.short_name:
+                        fresh_obj = obj
+                        break
+            # Composition
+            elif isinstance(item_data, Composition) and hasattr(item_data, 'short_name'):
+                for obj in doc.compositions:
+                    if getattr(obj, 'short_name', None) == item_data.short_name:
+                        fresh_obj = obj
+                        break
+            # PortInterface
+            elif isinstance(item_data, PortInterface) and hasattr(item_data, 'short_name'):
+                for obj in doc.port_interfaces:
+                    if getattr(obj, 'short_name', None) == item_data.short_name:
+                        fresh_obj = obj
+                        break
+            # ServiceInterface
+            elif hasattr(doc, 'service_interfaces') and isinstance(item_data, type(next(iter(doc.service_interfaces), None))):
+                # Use short_name for matching
+                for obj in doc.service_interfaces:
+                    if getattr(obj, 'short_name', None) == getattr(item_data, 'short_name', None):
+                        fresh_obj = obj
+                        break
+            # ECUC element (dict, including nested containers)
+            elif isinstance(item_data, dict) and 'short_name' in item_data and 'type' in item_data and hasattr(doc, 'ecuc_elements'):
+                def find_ecuc_dict_recursive(dict_list, short_name, type_):
+                    for d in dict_list:
+                        if isinstance(d, dict) and d.get('short_name') == short_name and d.get('type') == type_:
+                            return d
+                        # Search nested containers
+                        if isinstance(d, dict) and 'containers' in d and isinstance(d['containers'], list):
+                            found = find_ecuc_dict_recursive(d['containers'], short_name, type_)
+                            if found:
+                                return found
+                    return None
+                found = find_ecuc_dict_recursive(doc.ecuc_elements, item_data['short_name'], item_data['type'])
+                if found:
+                    fresh_obj = found
+        self.element_selected.emit(fresh_obj)
     
     def _on_item_double_clicked(self, item, column):
         """Handle item double click"""

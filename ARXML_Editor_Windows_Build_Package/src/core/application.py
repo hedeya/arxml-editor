@@ -4,7 +4,6 @@ Manages the overall application state and coordinates between components
 """
 
 from typing import Optional, Dict, Any
-import os
 from PyQt6.QtCore import QObject, pyqtSignal
 from .models.arxml_document import ARXMLDocument
 from .services.validation_service import ValidationService
@@ -66,17 +65,9 @@ class ARXMLEditorApp(QObject):
     def load_document(self, file_path: str) -> bool:
         """Load ARXML document from file with automatic schema detection"""
         try:
-            print(f"Loading document: {file_path}")
-            
-            # Check if file exists
-            if not os.path.exists(file_path):
-                print(f"Error: File not found: {file_path}")
-                return False
-            
             # Parse the ARXML file with automatic schema detection
             root = self._arxml_parser.parse_arxml_file(file_path)
             if root is None:
-                print("Error: Failed to parse ARXML file")
                 return False
             
             # Create document from parsed content
@@ -87,7 +78,6 @@ class ARXMLEditorApp(QObject):
             self._validation_service.validate_document(self._current_document)
             
             self.document_changed.emit()
-            print("Document loaded successfully")
             return True
         except FileNotFoundError:
             print(f"Error: File not found: {file_path}")
@@ -97,8 +87,6 @@ class ARXMLEditorApp(QObject):
             return False
         except Exception as e:
             print(f"Error loading document: {e}")
-            import traceback
-            traceback.print_exc()
             return False
     
     def save_document(self, file_path: str = None) -> bool:

@@ -5,7 +5,6 @@ Represents the complete ARXML document with all AUTOSAR elements
 
 import os
 from typing import List, Optional, Dict, Any
-import xml.etree.ElementTree as std_etree
 from src.core.services.xml_compat import etree
 from PyQt6.QtCore import QObject, pyqtSignal
 from .autosar_elements import (
@@ -90,7 +89,7 @@ class ARXMLDocument(QObject):
         """Initialize with empty ARXML structure"""
         # Create root element with proper namespace handling
         self._root_element = etree.Element("AUTOSAR", 
-            attrib={"xmlns": "http://autosar.org/schema/r4.0"})
+            xmlns="http://autosar.org/schema/r4.0")
         
         # Add schema location as attribute
         self._root_element.set("{http://www.w3.org/2001/XMLSchema-instance}schemaLocation", 
@@ -134,36 +133,8 @@ class ARXMLDocument(QObject):
         """Load ARXML document from parsed XML element"""
         self._root_element = root_element
         
-        # Some callers may pass a stdlib xml.etree.ElementTree.Element which
-        # doesn't implement lxml's xpath() API. Try to convert it to a
-        # real lxml.etree.Element (if lxml is available) so our parser (which
-        # relies on xpath) works. If lxml isn't available, fall back to the
-        # project's xml_compat etree behavior.
-        if not hasattr(root_element, 'xpath'):
-            try:
-                # Prefer using real lxml if present
-                import importlib
-                lxml_etree = importlib.import_module('lxml.etree')
-                xml_bytes = std_etree.tostring(root_element, encoding='utf-8')
-                root_element = lxml_etree.fromstring(xml_bytes)
-            except Exception:
-                try:
-                    # Fall back to the compatibility etree (may be stdlib-backed)
-                    xml_bytes = std_etree.tostring(root_element, encoding='utf-8')
-                    root_element = etree.fromstring(xml_bytes)
-                except Exception:
-                    # Give up conversion and continue with the original element
-                    pass
-
         # Extract schema version from namespace
-        if hasattr(root_element, 'nsmap'):
-            namespace = root_element.nsmap.get(None, "")
-        else:
-            # For standard library, extract namespace from tag
-            if '}' in root_element.tag:
-                namespace = root_element.tag.split('}')[0][1:]
-            else:
-                namespace = ""
+        namespace = root_element.nsmap.get(None, "")
         if "r4.0" in namespace:
             self._schema_version = "4.7.0"
         elif "r4.1" in namespace:
@@ -193,17 +164,6 @@ class ARXMLDocument(QObject):
                 if not child.tag.endswith(('APPLICATION-SW-COMPONENT-TYPE', 'ATOMIC-SW-COMPONENT-TYPE', 
                                          'COMPOSITION-SW-COMPONENT-TYPE', 'PORT-INTERFACE', 'SERVICE-INTERFACE')):
                     self._original_xml_elements.append(child)
-
-        # Debug: print parsed ECUC elements identities after loading
-        try:
-            print("Loaded ECUC elements:")
-            for e in self._ecuc_elements:
-                try:
-                    print(f"  id={id(e)} short_name='{e.get('short_name')}' type='{e.get('type')}' containers={len(e.get('containers', []))}")
-                except Exception:
-                    print(f"  id={id(e)} (unreadable content)")
-        except Exception:
-            pass
     
     def save_to_file(self, file_path: str):
         """Save document to file"""
@@ -307,17 +267,6 @@ class ARXMLDocument(QObject):
             print(f"Document has {len(self._sw_component_types)} component types")
             print(f"Document has {len(self._port_interfaces)} port interfaces")
             print(f"Document has {len(self._compositions)} compositions")
-
-            # Debug: print ECUC elements identities and short names to verify model state
-            try:
-                print("ECUC elements in model:")
-                for e in self._ecuc_elements:
-                    try:
-                        print(f"  id={id(e)} short_name='{e.get('short_name')}' type='{e.get('type')}' containers={len(e.get('containers', []))}")
-                    except Exception:
-                        print(f"  id={id(e)} (unreadable content)")
-            except Exception:
-                pass
             
             # Generate XML from current elements
             root = self._generate_xml()
@@ -343,7 +292,7 @@ class ARXMLDocument(QObject):
         """Generate XML from current elements"""
         # Create root element
         root = etree.Element("AUTOSAR", 
-                           attrib={"xmlns": "http://autosar.org/schema/r4.0"})
+                           xmlns="http://autosar.org/schema/r4.0")
         root.set("{http://www.w3.org/2001/XMLSchema-instance}schemaLocation", 
                 "http://autosar.org/schema/r4.0 AUTOSAR_4-7-0.xsd")
         

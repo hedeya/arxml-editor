@@ -1,0 +1,18 @@
+# Windows-specific requirements with pre-compiled wheel versions
+# These versions are known to work well on Windows without compilation
+
+# Core GUI framework
+PyQt6==6.6.1
+
+# XML processing
+lxml==4.9.3
+
+# Schema validation
+xmlschema==3.3.0
+
+# Type hints
+lxml-stubs==0.4.0
+typing-extensions==4.8.0
+
+# Build tools
+pyinstaller==6.16.0
