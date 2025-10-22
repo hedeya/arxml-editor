@@ -8,6 +8,14 @@ from typing import List, Dict, Any, Optional
 from dataclasses import dataclass
 from enum import Enum
 from PyQt6.QtCore import QObject, pyqtSignal
+try:
+    from ..interfaces import IValidationService, ISchemaService
+except ImportError:
+    # Fallback for cases where interfaces are not available
+    class IValidationService:
+        pass
+    class ISchemaService:
+        pass
 from ..models.autosar_elements import (
     SwComponentType, PortPrototype, Composition, 
     PortInterface, PortType, DataType
@@ -37,7 +45,7 @@ class ValidationService(QObject):
     issue_added = pyqtSignal(ValidationIssue)
     issue_removed = pyqtSignal(ValidationIssue)
     
-    def __init__(self, schema_service=None):
+    def __init__(self, schema_service: Optional[ISchemaService] = None):
         super().__init__()
         self._issues: List[ValidationIssue] = []
         self._validating = False  # Flag to prevent recursive calls

@@ -14,16 +14,17 @@ from .autosar_elements import (
     PortInterface, DataElement, ServiceInterface
 )
 from ..services.arxml_parser import ARXMLParser
+from ..repositories import IRepositoryFactory
 
 class ARXMLDocument(QObject):
-    """Main ARXML document model"""
+    """Main ARXML document model with repository support"""
     
     # Signals
     element_added = pyqtSignal(object)
     element_removed = pyqtSignal(object)
     element_modified = pyqtSignal(object)
     
-    def __init__(self):
+    def __init__(self, repository_factory: Optional[IRepositoryFactory] = None):
         super().__init__()
         self._file_path: Optional[str] = None
         self._schema_version: str = "4.7.0"
@@ -31,13 +32,21 @@ class ARXMLDocument(QObject):
         self._parser = ARXMLParser()
         self._modified: bool = False
         
-        # AUTOSAR elements
+        # Repository factory for data access
+        self._repository_factory = repository_factory
+        self._repositories: Optional[Dict[str, Any]] = None
+        
+        # AUTOSAR elements (legacy collections for backward compatibility)
         self._sw_component_types: List[SwComponentType] = []
         self._compositions: List[Composition] = []
         self._port_interfaces: List[PortInterface] = []
         self._service_interfaces: List[ServiceInterface] = []
         self._ecuc_elements: List[dict] = []
         self._original_xml_elements: List[etree.Element] = []
+        
+        # Initialize repositories if factory provided
+        if self._repository_factory:
+            self._initialize_repositories()
         
         # Initialize with empty ARXML structure
         self._initialize_empty_document()
@@ -81,10 +90,74 @@ class ARXMLDocument(QObject):
         """Get all service interfaces"""
         return self._service_interfaces
     
+    # Repository-based query methods
+    def get_sw_component_type_by_name(self, name: str) -> Optional[SwComponentType]:
+        """Get software component type by name using repository"""
+        if self._repositories and 'sw_component_types' in self._repositories:
+            return self._repositories['sw_component_types'].find_by_name(name)
+        # Fallback to legacy collection
+        return next((comp for comp in self._sw_component_types if comp.short_name == name), None)
+    
+    def get_port_interface_by_name(self, name: str) -> Optional[PortInterface]:
+        """Get port interface by name using repository"""
+        if self._repositories and 'port_interfaces' in self._repositories:
+            return self._repositories['port_interfaces'].find_by_name(name)
+        # Fallback to legacy collection
+        return next((iface for iface in self._port_interfaces if iface.short_name == name), None)
+    
+    def get_composition_by_name(self, name: str) -> Optional[Composition]:
+        """Get composition by name using repository"""
+        if self._repositories and 'compositions' in self._repositories:
+            return self._repositories['compositions'].find_by_name(name)
+        # Fallback to legacy collection
+        return next((comp for comp in self._compositions if comp.short_name == name), None)
+    
+    def search_sw_component_types(self, pattern: str) -> List[SwComponentType]:
+        """Search software component types by pattern using repository"""
+        if self._repositories and 'sw_component_types' in self._repositories:
+            return self._repositories['sw_component_types'].find_by_name_pattern(pattern)
+        # Fallback to legacy collection
+        import re
+        try:
+            regex = re.compile(pattern, re.IGNORECASE)
+            return [comp for comp in self._sw_component_types if regex.search(comp.short_name)]
+        except:
+            return []
+    
+    def search_port_interfaces(self, pattern: str) -> List[PortInterface]:
+        """Search port interfaces by pattern using repository"""
+        if self._repositories and 'port_interfaces' in self._repositories:
+            return self._repositories['port_interfaces'].find_by_name_pattern(pattern)
+        # Fallback to legacy collection
+        import re
+        try:
+            regex = re.compile(pattern, re.IGNORECASE)
+            return [iface for iface in self._port_interfaces if regex.search(iface.short_name)]
+        except:
+            return []
+    
+    def get_repository(self, entity_type: str):
+        """Get repository for specific entity type"""
+        if self._repositories and entity_type in self._repositories:
+            return self._repositories[entity_type]
+        return None
+    
     @property
     def ecuc_elements(self) -> List[dict]:
         """Get all ECUC elements"""
         return self._ecuc_elements
+    
+    def _initialize_repositories(self):
+        """Initialize repositories for data access"""
+        if not self._repository_factory:
+            return
+        
+        self._repositories = {
+            'sw_component_types': self._repository_factory.create_sw_component_type_repository(),
+            'port_interfaces': self._repository_factory.create_port_interface_repository(),
+            'service_interfaces': self._repository_factory.create_service_interface_repository(),
+            'compositions': self._repository_factory.create_composition_repository()
+        }
     
     def _initialize_empty_document(self):
         """Initialize with empty ARXML structure"""
@@ -225,46 +298,94 @@ class ARXMLDocument(QObject):
     
     def add_sw_component_type(self, component_type: SwComponentType):
         """Add a software component type"""
+        # Add to repository if available
+        if self._repositories and 'sw_component_types' in self._repositories:
+            self._repositories['sw_component_types'].save(component_type)
+        
+        # Add to legacy collection for backward compatibility
         self._sw_component_types.append(component_type)
+        self._modified = True
         self.element_added.emit(component_type)
     
     def remove_sw_component_type(self, component_type: SwComponentType):
         """Remove a software component type"""
+        # Remove from repository if available
+        if self._repositories and 'sw_component_types' in self._repositories:
+            self._repositories['sw_component_types'].delete(component_type)
+        
+        # Remove from legacy collection
         if component_type in self._sw_component_types:
             self._sw_component_types.remove(component_type)
+            self._modified = True
             self.element_removed.emit(component_type)
     
     def add_composition(self, composition: Composition):
         """Add a composition"""
+        # Add to repository if available
+        if self._repositories and 'compositions' in self._repositories:
+            self._repositories['compositions'].save(composition)
+        
+        # Add to legacy collection
         self._compositions.append(composition)
+        self._modified = True
         self.element_added.emit(composition)
     
     def remove_composition(self, composition: Composition):
         """Remove a composition"""
+        # Remove from repository if available
+        if self._repositories and 'compositions' in self._repositories:
+            self._repositories['compositions'].delete(composition)
+        
+        # Remove from legacy collection
         if composition in self._compositions:
             self._compositions.remove(composition)
+            self._modified = True
             self.element_removed.emit(composition)
     
     def add_port_interface(self, port_interface: PortInterface):
         """Add a port interface"""
+        # Add to repository if available
+        if self._repositories and 'port_interfaces' in self._repositories:
+            self._repositories['port_interfaces'].save(port_interface)
+        
+        # Add to legacy collection
         self._port_interfaces.append(port_interface)
+        self._modified = True
         self.element_added.emit(port_interface)
     
     def remove_port_interface(self, port_interface: PortInterface):
         """Remove a port interface"""
+        # Remove from repository if available
+        if self._repositories and 'port_interfaces' in self._repositories:
+            self._repositories['port_interfaces'].delete(port_interface)
+        
+        # Remove from legacy collection
         if port_interface in self._port_interfaces:
             self._port_interfaces.remove(port_interface)
+            self._modified = True
             self.element_removed.emit(port_interface)
     
     def add_service_interface(self, service_interface: ServiceInterface):
         """Add a service interface"""
+        # Add to repository if available
+        if self._repositories and 'service_interfaces' in self._repositories:
+            self._repositories['service_interfaces'].save(service_interface)
+        
+        # Add to legacy collection
         self._service_interfaces.append(service_interface)
+        self._modified = True
         self.element_added.emit(service_interface)
     
     def remove_service_interface(self, service_interface: ServiceInterface):
         """Remove a service interface"""
+        # Remove from repository if available
+        if self._repositories and 'service_interfaces' in self._repositories:
+            self._repositories['service_interfaces'].delete(service_interface)
+        
+        # Remove from legacy collection
         if service_interface in self._service_interfaces:
             self._service_interfaces.remove(service_interface)
+            self._modified = True
             self.element_removed.emit(service_interface)
     
     def add_sw_component_type(self, component_type: SwComponentType):

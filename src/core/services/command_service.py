@@ -7,6 +7,12 @@ from typing import List, Optional, Any, Callable
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from PyQt6.QtCore import QObject, pyqtSignal
+try:
+    from ..interfaces import ICommandService
+except ImportError:
+    # Fallback for cases where interfaces are not available
+    class ICommandService:
+        pass
 
 class Command(ABC):
     """Abstract base class for commands"""
@@ -228,7 +234,7 @@ class ConnectPortsCommand(Command):
         return f"Connect ports: {self.source_port.short_name} → {self.target_port.short_name}"
 
 class CommandService(QObject):
-    """Command service for managing undo/redo functionality"""
+    """Service for command execution with undo/redo support"""
     
     # Signals
     command_stack_changed = pyqtSignal()

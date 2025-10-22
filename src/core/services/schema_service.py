@@ -10,6 +10,12 @@ from dataclasses import dataclass
 from PyQt6.QtCore import QObject, pyqtSignal
 import xmlschema
 from src.core.services.xml_compat import etree
+try:
+    from ..interfaces import ISchemaService
+except ImportError:
+    # Fallback for cases where interfaces are not available
+    class ISchemaService:
+        pass
 
 @dataclass
 class SchemaVersion:
@@ -21,7 +27,7 @@ class SchemaVersion:
     description: str
 
 class SchemaService(QObject):
-    """Service for managing AUTOSAR schema versions"""
+    """Service for AUTOSAR schema management"""
     
     # Signals
     schema_version_changed = pyqtSignal(str)

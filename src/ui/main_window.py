@@ -15,13 +15,16 @@ from .views.property_editor import PropertyEditor
 from .views.validation_list import ValidationList
 from .views.diagram_view import DiagramView
 from ..core.application import ARXMLEditorApp
+from ..core.container import setup_container
 
 class MainWindow(QMainWindow):
     """Main application window"""
     
     def __init__(self):
         super().__init__()
-        self.app = ARXMLEditorApp()
+        # Setup dependency injection container
+        self._container = setup_container()
+        self.app = ARXMLEditorApp(self._container)
         self._setup_ui()
         self._connect_signals()
         self._setup_shortcuts()

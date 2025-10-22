@@ -7,6 +7,14 @@ import os
 from typing import List, Optional, Dict, Any
 from src.core.services.xml_compat import etree
 from PyQt6.QtCore import QObject, pyqtSignal
+try:
+    from ..interfaces import IARXMLParser, ISchemaService
+except ImportError:
+    # Fallback for cases where interfaces are not available
+    class IARXMLParser:
+        pass
+    class ISchemaService:
+        pass
 from ..models.autosar_elements import (
     SwComponentType, ApplicationSwComponentType, AtomicSwComponentType, 
     CompositionSwComponentType, Composition, PortInterface, ServiceInterface,
@@ -897,3 +905,20 @@ class ARXMLParser(QObject):
         except Exception as e:
             print(f"Error parsing generic ECUC element: {e}")
             return None
+
+    # Interface methods that delegate to existing extract methods
+    def parse_sw_component_types(self, root: etree.Element) -> List[SwComponentType]:
+        """Parse software component types from XML (interface method)"""
+        return self.extract_sw_component_types(root)
+    
+    def parse_port_interfaces(self, root: etree.Element) -> List[PortInterface]:
+        """Parse port interfaces from XML (interface method)"""
+        return self.extract_port_interfaces(root)
+    
+    def parse_service_interfaces(self, root: etree.Element) -> List[ServiceInterface]:
+        """Parse service interfaces from XML (interface method)"""
+        return self.extract_service_interfaces(root)
+    
+    def parse_compositions(self, root: etree.Element) -> List[Composition]:
+        """Parse compositions from XML (interface method)"""
+        return self.extract_compositions(root)

@@ -3,10 +3,17 @@ AUTOSAR Element Models
 Strongly-typed classes for AUTOSAR elements
 """
 
-from typing import List, Optional, Dict, Any, Union
+from typing import List, Optional, Dict, Any, Union, TYPE_CHECKING
 from dataclasses import dataclass, field
 from enum import Enum
 from PyQt6.QtCore import QObject, pyqtSignal
+try:
+    from ..events.ui_event_bus import UIEventBus
+except Exception:
+    UIEventBus = None
+
+if TYPE_CHECKING:
+    from ..domain_events import DomainEvent, IEventBus
 
 class PortType(Enum):
     """Port type enumeration"""
@@ -30,11 +37,66 @@ class SwComponentTypeCategory(Enum):
     COMPOSITION = "CompositionSwComponentType"
 
 class BaseElement(QObject):
-    """Base class for all AUTOSAR elements"""
+    """Base class for all AUTOSAR elements with event support"""
+    
+    # Signals
+    element_changed = pyqtSignal(object)  # Emitted when element changes
+    
     def __init__(self, short_name: str, desc: Optional[str] = None):
         super().__init__()
         self.short_name = short_name
         self.desc = desc
+        self.id = ""
+        self._event_bus: Optional['IEventBus'] = None
+        self._domain_events: List['DomainEvent'] = []
+        # Optional UI event bus to decouple UI signal emission
+        self._ui_event_bus: Optional['UIEventBus'] = None
+    
+    def set_event_bus(self, event_bus: 'IEventBus') -> None:
+        """Set the event bus for this element"""
+        self._event_bus = event_bus
+    
+    def add_domain_event(self, event: 'DomainEvent') -> None:
+        """Add a domain event to be published"""
+        self._domain_events.append(event)
+    
+    def get_domain_events(self) -> List['DomainEvent']:
+        """Get all pending domain events"""
+        return self._domain_events.copy()
+    
+    def clear_domain_events(self) -> None:
+        """Clear all pending domain events"""
+        self._domain_events.clear()
+    
+    def publish_domain_events(self) -> None:
+        """Publish all pending domain events"""
+        if self._event_bus:
+            for event in self._domain_events:
+                self._event_bus.publish(event)
+        self.clear_domain_events()
+    
+    def _notify_changed(self) -> None:
+        """Notify that the element has changed"""
+        # Emit legacy Qt signal for backward compatibility
+        try:
+            self.element_changed.emit(self)
+        except Exception:
+            # If running in non-Qt context, ignore
+            pass
+
+        # Publish a UI-level event (decoupled) if bus available
+        if self._ui_event_bus and UIEventBus is not None:
+            try:
+                self._ui_event_bus.publish('element_changed', self)
+            except Exception:
+                pass
+
+        # Publish domain events via domain event bus
+        self.publish_domain_events()
+
+    def set_ui_event_bus(self, ui_event_bus: 'UIEventBus') -> None:
+        """Set an optional UI event bus for decoupling UI updates"""
+        self._ui_event_bus = ui_event_bus
 
 class DataElement(BaseElement):
     """Data element model"""
@@ -51,7 +113,7 @@ class DataElement(BaseElement):
         self.max_value = max_value
 
 class PortInterface(BaseElement):
-    """Port interface model"""
+    """Port interface model with event publishing"""
     def __init__(self, short_name: str, desc: Optional[str] = None, is_service: bool = False):
         super().__init__(short_name, desc)
         self.is_service = is_service
@@ -61,11 +123,69 @@ class PortInterface(BaseElement):
     def add_data_element(self, data_element: DataElement):
         """Add a data element to the interface"""
         self.data_elements.append(data_element)
+        
+        # Add domain event
+        from ..domain_events import DataElementAdded
+        event = DataElementAdded(
+            interface_id=self.id,
+            interface_name=self.short_name,
+            element_name=data_element.short_name,
+            data_type=data_element.data_type.value if data_element.data_type else "unknown",
+            source='PortInterface'
+        )
+        self.add_domain_event(event)
+        self._notify_changed()
     
     def remove_data_element(self, data_element: DataElement):
         """Remove a data element from the interface"""
         if data_element in self.data_elements:
             self.data_elements.remove(data_element)
+            
+            # Add domain event
+            from ..domain_events import DataElementRemoved
+            event = DataElementRemoved(
+                interface_id=self.id,
+                interface_name=self.short_name,
+                element_name=data_element.short_name,
+                source='PortInterface'
+            )
+            self.add_domain_event(event)
+            self._notify_changed()
+    
+    def change_name(self, new_name: str) -> None:
+        """Change the interface name and publish event"""
+        old_name = self.short_name
+        self.short_name = new_name
+        
+        # Add domain event
+        from ..domain_events import PortInterfaceUpdated
+        event = PortInterfaceUpdated(
+            interface_id=self.id,
+            interface_name=new_name,
+            changes={'short_name': {'old': old_name, 'new': new_name}},
+            source='PortInterface'
+        )
+        self.add_domain_event(event)
+        self._notify_changed()
+    
+    def validate_invariants(self) -> List[str]:
+        """Validate business invariants"""
+        violations = []
+        
+        if not self.short_name or not self.short_name.strip():
+            violations.append("Interface name cannot be empty")
+        
+        # Check for duplicate data element names
+        element_names = [elem.short_name for elem in self.data_elements]
+        if len(element_names) != len(set(element_names)):
+            violations.append("Data element names must be unique within an interface")
+        
+        # Check for duplicate service element names
+        service_names = [elem.short_name for elem in self.service_elements]
+        if len(service_names) != len(set(service_names)):
+            violations.append("Service element names must be unique within an interface")
+        
+        return violations
 
 class ServiceElement(BaseElement):
     """Service element model"""
@@ -117,20 +237,72 @@ class PortPrototype(BaseElement):
             other_port.connected_ports.remove(self)
 
 class SwComponentType(BaseElement):
-    """Base software component type model"""
+    """Base software component type model with event publishing"""
     def __init__(self, short_name: str, category: SwComponentTypeCategory, desc: Optional[str] = None):
         super().__init__(short_name, desc)
         self.category = category
         self.ports: List[PortPrototype] = []
+        self.compositions: List['Composition'] = []
     
     def add_port(self, port: PortPrototype):
         """Add a port to the component"""
         self.ports.append(port)
+        self._notify_changed()
     
     def remove_port(self, port: PortPrototype):
         """Remove a port from the component"""
         if port in self.ports:
             self.ports.remove(port)
+            self._notify_changed()
+    
+    def change_name(self, new_name: str) -> None:
+        """Change the component name and publish event"""
+        old_name = self.short_name
+        self.short_name = new_name
+        
+        # Add domain event
+        from ..domain_events import SwComponentTypeUpdated
+        event = SwComponentTypeUpdated(
+            component_id=self.id,
+            component_name=new_name,
+            changes={'short_name': {'old': old_name, 'new': new_name}},
+            source='SwComponentType'
+        )
+        self.add_domain_event(event)
+        self._notify_changed()
+    
+    def change_category(self, new_category: SwComponentTypeCategory) -> None:
+        """Change the component category and publish event"""
+        old_category = self.category
+        self.category = new_category
+        
+        # Add domain event
+        from ..domain_events import SwComponentTypeUpdated
+        event = SwComponentTypeUpdated(
+            component_id=self.id,
+            component_name=self.short_name,
+            changes={'category': {'old': old_category.value, 'new': new_category.value}},
+            source='SwComponentType'
+        )
+        self.add_domain_event(event)
+        self._notify_changed()
+    
+    def validate_invariants(self) -> List[str]:
+        """Validate business invariants"""
+        violations = []
+        
+        if not self.short_name or not self.short_name.strip():
+            violations.append("Component name cannot be empty")
+        
+        if not self.category:
+            violations.append("Component category must be specified")
+        
+        # Check for duplicate port names
+        port_names = [port.short_name for port in self.ports]
+        if len(port_names) != len(set(port_names)):
+            violations.append("Port names must be unique within a component")
+        
+        return violations
     
     def get_ports_by_type(self, port_type: PortType) -> List[PortPrototype]:
         """Get ports by type"""
