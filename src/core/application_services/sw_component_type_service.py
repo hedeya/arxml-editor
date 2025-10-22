@@ -19,11 +19,13 @@ class SwComponentTypeApplicationService(ISwComponentTypeApplicationService):
                  repository: ISwComponentTypeRepository,
                  validation_service: IValidationService,
                  command_service: ICommandService,
-                 event_bus: IEventBus = None):
+                 event_bus: IEventBus = None,
+                 ui_event_bus: 'UIEventBus' = None):
         self._repository = repository
         self._validation_service = validation_service
         self._command_service = command_service
         self._event_bus = event_bus
+        self._ui_event_bus = ui_event_bus
     
     def create_component_type(self, name: str, category: str, description: str = "") -> ApplicationServiceResult:
         """Create new software component type with validation"""
@@ -57,7 +59,11 @@ class SwComponentTypeApplicationService(ISwComponentTypeApplicationService):
             
             # Create component
             # Create component (existing QObject-based model)
-            component = SwComponentType(name, description, category_enum)
+            component = SwComponentType(name, category_enum, description)
+            
+            # Set UI event bus for decoupled UI notifications
+            if self._ui_event_bus:
+                component.set_ui_event_bus(self._ui_event_bus)
             
             # Validate component
             validation_result = self.validate_component_type(component)

@@ -72,23 +72,23 @@ class ARXMLDocument(QObject):
     
     @property
     def sw_component_types(self) -> List[SwComponentType]:
-        """Get all software component types"""
-        return self._sw_component_types
+        """Get all software component types (read-only)"""
+        return self._sw_component_types.copy()
     
     @property
     def compositions(self) -> List[Composition]:
-        """Get all compositions"""
-        return self._compositions
+        """Get all compositions (read-only)"""
+        return self._compositions.copy()
     
     @property
     def port_interfaces(self) -> List[PortInterface]:
-        """Get all port interfaces"""
-        return self._port_interfaces
+        """Get all port interfaces (read-only)"""
+        return self._port_interfaces.copy()
     
     @property
     def service_interfaces(self) -> List[ServiceInterface]:
-        """Get all service interfaces"""
-        return self._service_interfaces
+        """Get all service interfaces (read-only)"""
+        return self._service_interfaces.copy()
     
     # Repository-based query methods
     def get_sw_component_type_by_name(self, name: str) -> Optional[SwComponentType]:
@@ -141,6 +141,125 @@ class ARXMLDocument(QObject):
         if self._repositories and entity_type in self._repositories:
             return self._repositories[entity_type]
         return None
+    
+    # Aggregate-level business methods
+    def get_component_type_count(self) -> int:
+        """Get total number of component types"""
+        if self._repositories and 'sw_component_types' in self._repositories:
+            return len(self._repositories['sw_component_types'].find_all())
+        return len(self._sw_component_types)
+    
+    def get_interface_count(self) -> int:
+        """Get total number of interfaces"""
+        port_count = 0
+        service_count = 0
+        
+        if self._repositories:
+            if 'port_interfaces' in self._repositories:
+                port_count = len(self._repositories['port_interfaces'].find_all())
+            if 'service_interfaces' in self._repositories:
+                service_count = len(self._repositories['service_interfaces'].find_all())
+        else:
+            port_count = len(self._port_interfaces)
+            service_count = len(self._service_interfaces)
+        
+        return port_count + service_count
+    
+    def get_composition_count(self) -> int:
+        """Get total number of compositions"""
+        if self._repositories and 'compositions' in self._repositories:
+            return len(self._repositories['compositions'].find_all())
+        return len(self._compositions)
+    
+    def has_component_type(self, name: str) -> bool:
+        """Check if component type exists by name"""
+        if self._repositories and 'sw_component_types' in self._repositories:
+            return self._repositories['sw_component_types'].exists_by_name(name)
+        return any(comp.short_name == name for comp in self._sw_component_types)
+    
+    def has_port_interface(self, name: str) -> bool:
+        """Check if port interface exists by name"""
+        if self._repositories and 'port_interfaces' in self._repositories:
+            return self._repositories['port_interfaces'].exists_by_name(name)
+        return any(iface.short_name == name for iface in self._port_interfaces)
+    
+    def get_component_types_by_category(self, category: str) -> List[SwComponentType]:
+        """Get component types by category"""
+        if self._repositories and 'sw_component_types' in self._repositories:
+            return self._repositories['sw_component_types'].find_by_category(category)
+        return [comp for comp in self._sw_component_types if comp.category.value == category]
+    
+    def get_service_interfaces(self) -> List[PortInterface]:
+        """Get all service interfaces"""
+        if self._repositories and 'port_interfaces' in self._repositories:
+            return self._repositories['port_interfaces'].find_service_interfaces()
+        return [iface for iface in self._port_interfaces if iface.is_service]
+    
+    def get_sender_receiver_interfaces(self) -> List[PortInterface]:
+        """Get all sender-receiver interfaces"""
+        if self._repositories and 'port_interfaces' in self._repositories:
+            return self._repositories['port_interfaces'].find_sender_receiver_interfaces()
+        return [iface for iface in self._port_interfaces if not iface.is_service]
+    
+    def validate_document_consistency(self) -> List[str]:
+        """Validate document-level business rules and invariants"""
+        violations = []
+        
+        # Check for duplicate names across different entity types
+        all_names = set()
+        
+        # Collect all names
+        for comp in self._sw_component_types:
+            if comp.short_name in all_names:
+                violations.append(f"Duplicate name '{comp.short_name}' found in component types")
+            all_names.add(comp.short_name)
+        
+        for iface in self._port_interfaces:
+            if iface.short_name in all_names:
+                violations.append(f"Duplicate name '{iface.short_name}' found in port interfaces")
+            all_names.add(iface.short_name)
+        
+        for comp in self._compositions:
+            if comp.short_name in all_names:
+                violations.append(f"Duplicate name '{comp.short_name}' found in compositions")
+            all_names.add(comp.short_name)
+        
+        # Check for orphaned references
+        for comp in self._sw_component_types:
+            for port in comp.ports:
+                if port.interface_ref and not self.has_port_interface(port.interface_ref):
+                    violations.append(f"Component '{comp.short_name}' references non-existent interface '{port.interface_ref}'")
+        
+        # Check for empty compositions
+        for comp in self._compositions:
+            if not comp.component_types:
+                violations.append(f"Composition '{comp.short_name}' is empty")
+        
+        return violations
+    
+    def get_document_statistics(self) -> Dict[str, Any]:
+        """Get comprehensive document statistics"""
+        return {
+            'component_types': {
+                'total': self.get_component_type_count(),
+                'by_category': {
+                    'APPLICATION': len(self.get_component_types_by_category('ApplicationSwComponentType')),
+                    'ATOMIC': len(self.get_component_types_by_category('AtomicSwComponentType')),
+                    'COMPOSITION': len(self.get_component_types_by_category('CompositionSwComponentType'))
+                }
+            },
+            'interfaces': {
+                'total': self.get_interface_count(),
+                'service_interfaces': len(self.get_service_interfaces()),
+                'sender_receiver_interfaces': len(self.get_sender_receiver_interfaces())
+            },
+            'compositions': {
+                'total': self.get_composition_count()
+            },
+            'schema_version': self._schema_version,
+            'modified': self._modified,
+            'file_path': self._file_path
+        }
     
     @property
     def ecuc_elements(self) -> List[dict]:

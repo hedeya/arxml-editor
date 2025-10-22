@@ -316,6 +316,39 @@ class CommandUndone(DomainEvent):
             'command_type': self.command_type
         })
 
+# Element Events
+@dataclass
+class ElementRenamed(DomainEvent):
+    """Event raised when an element is renamed"""
+    element_id: str = ""
+    element_type: str = ""
+    old_name: str = ""
+    new_name: str = ""
+    
+    def __post_init__(self):
+        super().__post_init__()
+        self.data.update({
+            'element_id': self.element_id,
+            'element_type': self.element_type,
+            'old_name': self.old_name,
+            'new_name': self.new_name
+        })
+
+@dataclass
+class ElementDeleted(DomainEvent):
+    """Event raised when an element is deleted"""
+    element_id: str = ""
+    element_type: str = ""
+    element_name: str = ""
+    
+    def __post_init__(self):
+        super().__post_init__()
+        self.data.update({
+            'element_id': self.element_id,
+            'element_type': self.element_type,
+            'element_name': self.element_name
+        })
+
 # System Events
 @dataclass
 class SystemError(DomainEvent):

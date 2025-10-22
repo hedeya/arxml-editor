@@ -166,7 +166,7 @@ def test_event_handlers():
         
         # Logging handler
         logging_handler = LoggingEventHandler()
-        event = SwComponentTypeCreated("TestComponent", "comp_123", "APPLICATION")
+        event = SwComponentTypeCreated(component_id="TestComponent", component_name="comp_123", category="APPLICATION")
         logging_handler.handle(event)
         assert logging_handler.handled_events == 1
         print("✅ Logging handler working")
@@ -179,7 +179,7 @@ def test_event_handlers():
         
         # Validation handler
         validation_handler = ValidationEventHandler()
-        validation_event = ValidationIssueDetected("issue_123", "elem_123", "SwComponentType", "Test error")
+        validation_event = ValidationIssueDetected(issue_id="issue_123", element_id="elem_123", element_type="SwComponentType", message="Test error")
         validation_handler.handle(validation_event)
         assert len(validation_handler.validation_issues) == 1
         print("✅ Validation handler working")
