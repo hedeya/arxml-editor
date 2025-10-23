@@ -494,8 +494,18 @@ class MainWindow(QMainWindow):
         # Refresh tree to show updated names/properties
         self.tree_navigator.refresh()
         
-        # Mark document as modified
-        self.app.mark_document_modified()
+        # Mark document as modified (ensure compatibility with current app API)
+        if hasattr(self.app, 'current_document') and self.app.current_document:
+            try:
+                self.app.current_document.set_modified(True)
+            except Exception:
+                # Best-effort: ignore if document doesn't support modified flag
+                pass
+            # Update window title to reflect modified state
+            try:
+                self._update_title()
+            except Exception:
+                pass
         
         # Update status bar
         element_type = type(element).__name__
