@@ -43,25 +43,26 @@ def create_vdx(filename="ARXML_Editor_Diagrams.vdx"):
     class_page = '  <Page ID="1" Name="Class Diagram">\n    <Shapes>\n'
     class_page += make_shape(1, 1.0, 8.0, 1.8, 0.8, 'ARXMLEditorApp', '#E1F5FE')
     class_page += make_shape(2, 3.0, 8.0, 1.8, 0.8, 'ARXMLDocument', '#E8F5E8')
-        class_page += make_shape(3, 5.0, 8.0, 1.8, 0.8, 'ARXMLParser', '#FFF3E0')
-        class_page += make_shape(4, 2.0, 6.0, 1.6, 0.7, 'SwComponentType', '#E8F5E8')
-        class_page += make_shape(5, 4.0, 6.0, 1.6, 0.7, 'PortInterface', '#E8F5E8')
-        # simple connectors
-        class_page += f'''    <Shape ID="6" Type="Connector" Name="Connector_6">
-            <XForm>
-                <PinX>2.5</PinX>
-                <PinY>8.0</PinY>
-                <Width>2.0</Width>
-                <Height>0.2</Height>
-            </XForm>
-            <Text>
-                <cp IX="0">controls</cp>
-            </Text>
-            <Line>
-                <LineColor>#000000</LineColor>
-                <LinePattern>1</LinePattern>
-            </Line>
-        </Shape>\n'''
+    class_page += make_shape(3, 5.0, 8.0, 1.8, 0.8, 'ARXMLParser', '#FFF3E0')
+    class_page += make_shape(4, 2.0, 6.0, 1.6, 0.7, 'SwComponentType', '#E8F5E8')
+    class_page += make_shape(5, 4.0, 6.0, 1.6, 0.7, 'PortInterface', '#E8F5E8')
+    class_page += (
+        '    <Shape ID="6" Type="Connector" Name="Connector_6">\n'
+        '      <XForm>\n'
+        '        <PinX>2.5</PinX>\n'
+        '        <PinY>8.0</PinY>\n'
+        '        <Width>2.0</Width>\n'
+        '        <Height>0.2</Height>\n'
+        '      </XForm>\n'
+        '      <Text>\n'
+        '        <cp IX="0">controls</cp>\n'
+        '      </Text>\n'
+        '      <Line>\n'
+        '        <LineColor>#000000</LineColor>\n'
+        '        <LinePattern>1</LinePattern>\n'
+        '      </Line>\n'
+        '    </Shape>\n'
+    )
     class_page += '    </Shapes>\n  </Page>\n'
     pages.append(class_page)
 

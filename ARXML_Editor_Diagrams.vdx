@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VisioDocument xmlns="http://schemas.microsoft.com/office/visio/2003/core" Created="2025-10-23T14:23:11.295711">
+  <Page ID="1" Name="Class Diagram">
+    <Shapes>
+    <Shape ID="1" Type="Shape" Name="ARXMLEditorApp">
+      <XForm>
+        <PinX>1.0</PinX>
+        <PinY>8.0</PinY>
+        <Width>1.8</Width>
+        <Height>0.8</Height>
+      </XForm>
+      <Text>
+        <cp IX="0">ARXMLEditorApp</cp>
+      </Text>
+      <Fill>
+        <FillForegnd>#E1F5FE</FillForegnd>
+      </Fill>
+    </Shape>
+    <Shape ID="2" Type="Shape" Name="ARXMLDocument">
+      <XForm>
+        <PinX>3.0</PinX>
+        <PinY>8.0</PinY>
+        <Width>1.8</Width>
+        <Height>0.8</Height>
+      </XForm>
+      <Text>
+        <cp IX="0">ARXMLDocument</cp>
+      </Text>
+      <Fill>
+        <FillForegnd>#E8F5E8</FillForegnd>
+      </Fill>
+    </Shape>
+    <Shape ID="3" Type="Shape" Name="ARXMLParser">
+      <XForm>
+        <PinX>5.0</PinX>
+        <PinY>8.0</PinY>
+        <Width>1.8</Width>
+        <Height>0.8</Height>
+      </XForm>
+      <Text>
+        <cp IX="0">ARXMLParser</cp>
+      </Text>
+      <Fill>
+        <FillForegnd>#FFF3E0</FillForegnd>
+      </Fill>
+    </Shape>
+    <Shape ID="4" Type="Shape" Name="SwComponentType">
+      <XForm>
+        <PinX>2.0</PinX>
+        <PinY>6.0</PinY>
+        <Width>1.6</Width>
+        <Height>0.7</Height>
+      </XForm>
+      <Text>
+        <cp IX="0">SwComponentType</cp>
+      </Text>
+      <Fill>
+        <FillForegnd>#E8F5E8</FillForegnd>
+      </Fill>
+    </Shape>
+    <Shape ID="5" Type="Shape" Name="PortInterface">
+      <XForm>
+        <PinX>4.0</PinX>
+        <PinY>6.0</PinY>
+        <Width>1.6</Width>
+        <Height>0.7</Height>
+      </XForm>
+      <Text>
+        <cp IX="0">PortInterface</cp>
+      </Text>
+      <Fill>
+        <FillForegnd>#E8F5E8</FillForegnd>
+      </Fill>
+    </Shape>
+    <Shape ID="6" Type="Connector" Name="Connector_6">
+      <XForm>
+        <PinX>2.5</PinX>
+        <PinY>8.0</PinY>
+        <Width>2.0</Width>
+        <Height>0.2</Height>
+      </XForm>
+      <Text>
+        <cp IX="0">controls</cp>
+      </Text>
+      <Line>
+        <LineColor>#000000</LineColor>
+        <LinePattern>1</LinePattern>
+      </Line>
+    </Shape>
+    </Shapes>
+  </Page>
+  <Page ID="2" Name="Flowchart">
+    <Shapes>
+    <Shape ID="10" Type="Shape" Name="Start">
+      <XForm>
+        <PinX>2.0</PinX>
+        <PinY>8.0</PinY>
+        <Width>1.6</Width>
+        <Height>0.7</Height>
+      </XForm>
+      <Text>
+        <cp IX="0">Start</cp>
+      </Text>
+      <Fill>
+        <FillForegnd>#C8E6C9</FillForegnd>
+      </Fill>
+    </Shape>
+    <Shape ID="11" Type="Shape" Name="Load Document">
+      <XForm>
+        <PinX>2.0</PinX>
+        <PinY>6.5</PinY>
+        <Width>2.4</Width>
+        <Height>0.8</Height>
+      </XForm>
+      <Text>
+        <cp IX="0">Load Document</cp>
+      </Text>
+      <Fill>
+        <FillForegnd>#FFF9C4</FillForegnd>
+      </Fill>
+    </Shape>
+    <Shape ID="12" Type="Shape" Name="Validate">
+      <XForm>
+        <PinX>2.0</PinX>
+        <PinY>5.0</PinY>
+        <Width>2.4</Width>
+        <Height>0.8</Height>
+      </XForm>
+      <Text>
+        <cp IX="0">Validate</cp>
+      </Text>
+      <Fill>
+        <FillForegnd>#FFCDD2</FillForegnd>
+      </Fill>
+    </Shape>
+    <Shape ID="13" Type="Shape" Name="Show Results">
+      <XForm>
+        <PinX>2.0</PinX>
+        <PinY>3.5</PinY>
+        <Width>2.0</Width>
+        <Height>0.8</Height>
+      </XForm>
+      <Text>
+        <cp IX="0">Show Results</cp>
+      </Text>
+      <Fill>
+        <FillForegnd>#BBDEFB</FillForegnd>
+      </Fill>
+    </Shape>
+    </Shapes>
+  </Page>
+  <Page ID="3" Name="DFD">
+    <Shapes>
+    <Shape ID="20" Type="Shape" Name="User">
+      <XForm>
+        <PinX>1.5</PinX>
+        <PinY>8.0</PinY>
+        <Width>2.0</Width>
+        <Height>0.8</Height>
+      </XForm>
+      <Text>
+        <cp IX="0">User</cp>
+      </Text>
+      <Fill>
+        <FillForegnd>#F0F4C3</FillForegnd>
+      </Fill>
+    </Shape>
+    <Shape ID="21" Type="Shape" Name="MainWindow">
+      <XForm>
+        <PinX>4.0</PinX>
+        <PinY>8.0</PinY>
+        <Width>2.0</Width>
+        <Height>0.8</Height>
+      </XForm>
+      <Text>
+        <cp IX="0">MainWindow</cp>
+      </Text>
+      <Fill>
+        <FillForegnd>#F3E5F5</FillForegnd>
+      </Fill>
+    </Shape>
+    <Shape ID="22" Type="Shape" Name="ARXMLDocument">
+      <XForm>
+        <PinX>4.0</PinX>
+        <PinY>6.0</PinY>
+        <Width>2.0</Width>
+        <Height>0.8</Height>
+      </XForm>
+      <Text>
+        <cp IX="0">ARXMLDocument</cp>
+      </Text>
+      <Fill>
+        <FillForegnd>#E8F5E8</FillForegnd>
+      </Fill>
+    </Shape>
+    <Shape ID="23" Type="Shape" Name="Parser">
+      <XForm>
+        <PinX>6.5</PinX>
+        <PinY>6.0</PinY>
+        <Width>2.0</Width>
+        <Height>0.8</Height>
+      </XForm>
+      <Text>
+        <cp IX="0">Parser</cp>
+      </Text>
+      <Fill>
+        <FillForegnd>#FFF3E0</FillForegnd>
+      </Fill>
+    </Shape>
+    </Shapes>
+  </Page>
+  <Page ID="4" Name="Sequence">
+    <Shapes>
+    <Shape ID="30" Type="Shape" Name="User">
+      <XForm>
+        <PinX>1.0</PinX>
+        <PinY>8.0</PinY>
+        <Width>1.6</Width>
+        <Height>0.7</Height>
+      </XForm>
+      <Text>
+        <cp IX="0">User</cp>
+      </Text>
+      <Fill>
+        <FillForegnd>#F0F4C3</FillForegnd>
+      </Fill>
+    </Shape>
+    <Shape ID="31" Type="Shape" Name="MainWindow">
+      <XForm>
+        <PinX>3.0</PinX>
+        <PinY>8.0</PinY>
+        <Width>1.6</Width>
+        <Height>0.7</Height>
+      </XForm>
+      <Text>
+        <cp IX="0">MainWindow</cp>
+      </Text>
+      <Fill>
+        <FillForegnd>#F3E5F5</FillForegnd>
+      </Fill>
+    </Shape>
+    <Shape ID="32" Type="Shape" Name="ARXMLEditorApp">
+      <XForm>
+        <PinX>5.0</PinX>
+        <PinY>8.0</PinY>
+        <Width>1.6</Width>
+        <Height>0.7</Height>
+      </XForm>
+      <Text>
+        <cp IX="0">ARXMLEditorApp</cp>
+      </Text>
+      <Fill>
+        <FillForegnd>#E1F5FE</FillForegnd>
+      </Fill>
+    </Shape>
+    <Shape ID="33" Type="Shape" Name="ARXMLParser">
+      <XForm>
+        <PinX>7.0</PinX>
+        <PinY>8.0</PinY>
+        <Width>1.6</Width>
+        <Height>0.7</Height>
+      </XForm>
+      <Text>
+        <cp IX="0">ARXMLParser</cp>
+      </Text>
+      <Fill>
+        <FillForegnd>#FFF3E0</FillForegnd>
+      </Fill>
+    </Shape>
+    </Shapes>
+  </Page>
+</VisioDocument>

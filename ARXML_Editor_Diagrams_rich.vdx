@@ -1,0 +1,406 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VisioDocument xmlns="http://schemas.microsoft.com/office/visio/2003/core" Created="2025-10-23T14:23:11.317035">
+  <Page ID="1" Name="Class Diagram (rich)">
+    <Shapes>
+    <Shape ID="1" Type="Shape" Name="ARXMLEditorApp">
+      <XForm>
+        <PinX>1.5</PinX>
+        <PinY>8.5</PinY>
+        <Width>2.0</Width>
+        <Height>0.8</Height>
+      </XForm>
+      <Text>
+        <cp IX="0">ARXMLEditorApp</cp>
+      </Text>
+      <Fill>
+        <FillForegnd>#E1F5FE</FillForegnd>
+      </Fill>
+    </Shape>
+    <Shape ID="2" Type="Shape" Name="MainWindow">
+      <XForm>
+        <PinX>4.0</PinX>
+        <PinY>8.5</PinY>
+        <Width>2.0</Width>
+        <Height>0.8</Height>
+      </XForm>
+      <Text>
+        <cp IX="0">MainWindow</cp>
+      </Text>
+      <Fill>
+        <FillForegnd>#F3E5F5</FillForegnd>
+      </Fill>
+    </Shape>
+    <Shape ID="3" Type="Shape" Name="ARXMLDocument">
+      <XForm>
+        <PinX>6.5</PinX>
+        <PinY>8.5</PinY>
+        <Width>2.0</Width>
+        <Height>0.8</Height>
+      </XForm>
+      <Text>
+        <cp IX="0">ARXMLDocument</cp>
+      </Text>
+      <Fill>
+        <FillForegnd>#E8F5E8</FillForegnd>
+      </Fill>
+    </Shape>
+    <Shape ID="100" Type="Connector" Name="Connector_100">
+      <XForm>
+        <PinX>3.3</PinX>
+        <PinY>8.5</PinY>
+        <Width>1.1999999999999997</Width>
+        <Height>0.2</Height>
+      </XForm>
+      <Text>
+        <cp IX="0">controls</cp>
+      </Text>
+      <Line>
+        <LineColor>#000000</LineColor>
+        <LinePattern>1</LinePattern>
+      </Line>
+    </Shape>
+    <Shape ID="101" Type="Connector" Name="Connector_101">
+      <XForm>
+        <PinX>5.65</PinX>
+        <PinY>8.5</PinY>
+        <Width>1.5</Width>
+        <Height>0.2</Height>
+      </XForm>
+      <Text>
+        <cp IX="0">updates</cp>
+      </Text>
+      <Line>
+        <LineColor>#000000</LineColor>
+        <LinePattern>1</LinePattern>
+      </Line>
+    </Shape>
+    </Shapes>
+  </Page>
+  <Page ID="2" Name="Flowchart (rich)">
+    <Shapes>
+    <Shape ID="200" Type="Shape" Name="UI">
+      <XForm>
+        <PinX>3.0</PinX>
+        <PinY>7.0</PinY>
+        <Width>6.0</Width>
+        <Height>3.5</Height>
+      </XForm>
+      <Text>
+        <cp IX="0">UI</cp>
+      </Text>
+      <Fill>
+        <FillForegnd>#F5F5F5</FillForegnd>
+      </Fill>
+    </Shape>
+    <Shape ID="1200" Type="Shape" Name="UI">
+      <XForm>
+        <PinX>0.6</PinX>
+        <PinY>8.45</PinY>
+        <Width>5.2</Width>
+        <Height>0.5</Height>
+      </XForm>
+      <Text>
+        <cp IX="0">UI</cp>
+      </Text>
+      <Fill>
+        <FillForegnd>#E0E0E0</FillForegnd>
+      </Fill>
+    </Shape>
+    <Shape ID="201" Type="Shape" Name="Application">
+      <XForm>
+        <PinX>3.0</PinX>
+        <PinY>3.0</PinY>
+        <Width>6.0</Width>
+        <Height>3.5</Height>
+      </XForm>
+      <Text>
+        <cp IX="0">Application</cp>
+      </Text>
+      <Fill>
+        <FillForegnd>#F5F5F5</FillForegnd>
+      </Fill>
+    </Shape>
+    <Shape ID="1201" Type="Shape" Name="Application">
+      <XForm>
+        <PinX>0.6</PinX>
+        <PinY>4.45</PinY>
+        <Width>5.2</Width>
+        <Height>0.5</Height>
+      </XForm>
+      <Text>
+        <cp IX="0">Application</cp>
+      </Text>
+      <Fill>
+        <FillForegnd>#E0E0E0</FillForegnd>
+      </Fill>
+    </Shape>
+    <Shape ID="210" Type="Shape" Name="Start">
+      <XForm>
+        <PinX>3.0</PinX>
+        <PinY>7.5</PinY>
+        <Width>1.6</Width>
+        <Height>0.6</Height>
+      </XForm>
+      <Text>
+        <cp IX="0">Start</cp>
+      </Text>
+      <Fill>
+        <FillForegnd>#C8E6C9</FillForegnd>
+      </Fill>
+    </Shape>
+    <Shape ID="211" Type="Shape" Name="Open File">
+      <XForm>
+        <PinX>3.0</PinX>
+        <PinY>6.5</PinY>
+        <Width>2.6</Width>
+        <Height>0.8</Height>
+      </XForm>
+      <Text>
+        <cp IX="0">Open File</cp>
+      </Text>
+      <Fill>
+        <FillForegnd>#FFF9C4</FillForegnd>
+      </Fill>
+    </Shape>
+    <Shape ID="212" Type="Shape" Name="Parse">
+      <XForm>
+        <PinX>3.0</PinX>
+        <PinY>5.5</PinY>
+        <Width>2.6</Width>
+        <Height>0.8</Height>
+      </XForm>
+      <Text>
+        <cp IX="0">Parse</cp>
+      </Text>
+      <Fill>
+        <FillForegnd>#FFF3E0</FillForegnd>
+      </Fill>
+    </Shape>
+    <Shape ID="300" Type="Connector" Name="Connector_300">
+      <XForm>
+        <PinX>3.0</PinX>
+        <PinY>7.0</PinY>
+        <Width>0.2</Width>
+        <Height>0.1999999999999993</Height>
+      </XForm>
+      <Text>
+        <cp IX="0"></cp>
+      </Text>
+      <Line>
+        <LineColor>#000000</LineColor>
+        <LinePattern>1</LinePattern>
+      </Line>
+    </Shape>
+    <Shape ID="301" Type="Connector" Name="Connector_301">
+      <XForm>
+        <PinX>3.0</PinX>
+        <PinY>6.0</PinY>
+        <Width>0.2</Width>
+        <Height>0.1999999999999993</Height>
+      </XForm>
+      <Text>
+        <cp IX="0"></cp>
+      </Text>
+      <Line>
+        <LineColor>#000000</LineColor>
+        <LinePattern>1</LinePattern>
+      </Line>
+    </Shape>
+    </Shapes>
+  </Page>
+  <Page ID="3" Name="DFD (rich)">
+    <Shapes>
+    <Shape ID="400" Type="Shape" Name="User">
+      <XForm>
+        <PinX>1.5</PinX>
+        <PinY>8.5</PinY>
+        <Width>2.0</Width>
+        <Height>0.8</Height>
+      </XForm>
+      <Text>
+        <cp IX="0">User</cp>
+      </Text>
+      <Fill>
+        <FillForegnd>#F0F4C3</FillForegnd>
+      </Fill>
+    </Shape>
+    <Shape ID="401" Type="Shape" Name="MainWindow">
+      <XForm>
+        <PinX>4.0</PinX>
+        <PinY>8.5</PinY>
+        <Width>2.0</Width>
+        <Height>0.8</Height>
+      </XForm>
+      <Text>
+        <cp IX="0">MainWindow</cp>
+      </Text>
+      <Fill>
+        <FillForegnd>#F3E5F5</FillForegnd>
+      </Fill>
+    </Shape>
+    <Shape ID="402" Type="Shape" Name="Parser">
+      <XForm>
+        <PinX>6.5</PinX>
+        <PinY>8.5</PinY>
+        <Width>2.0</Width>
+        <Height>0.8</Height>
+      </XForm>
+      <Text>
+        <cp IX="0">Parser</cp>
+      </Text>
+      <Fill>
+        <FillForegnd>#FFF3E0</FillForegnd>
+      </Fill>
+    </Shape>
+    <Shape ID="403" Type="Shape" Name="ARXMLDocument">
+      <XForm>
+        <PinX>4.0</PinX>
+        <PinY>6.5</PinY>
+        <Width>2.0</Width>
+        <Height>0.8</Height>
+      </XForm>
+      <Text>
+        <cp IX="0">ARXMLDocument</cp>
+      </Text>
+      <Fill>
+        <FillForegnd>#E8F5E8</FillForegnd>
+      </Fill>
+    </Shape>
+    <Shape ID="500" Type="Connector" Name="Connector_500">
+      <XForm>
+        <PinX>2.9</PinX>
+        <PinY>8.5</PinY>
+        <Width>2.0</Width>
+        <Height>0.2</Height>
+      </XForm>
+      <Text>
+        <cp IX="0">open</cp>
+      </Text>
+      <Line>
+        <LineColor>#000000</LineColor>
+        <LinePattern>1</LinePattern>
+      </Line>
+    </Shape>
+    <Shape ID="501" Type="Connector" Name="Connector_501">
+      <XForm>
+        <PinX>5.1</PinX>
+        <PinY>8.5</PinY>
+        <Width>2.0</Width>
+        <Height>0.2</Height>
+      </XForm>
+      <Text>
+        <cp IX="0">parse request</cp>
+      </Text>
+      <Line>
+        <LineColor>#000000</LineColor>
+        <LinePattern>1</LinePattern>
+      </Line>
+    </Shape>
+    </Shapes>
+  </Page>
+  <Page ID="4" Name="Sequence (rich)">
+    <Shapes>
+    <Shape ID="600" Type="Shape" Name="User">
+      <XForm>
+        <PinX>1.5</PinX>
+        <PinY>8.5</PinY>
+        <Width>1.6</Width>
+        <Height>0.7</Height>
+      </XForm>
+      <Text>
+        <cp IX="0">User</cp>
+      </Text>
+      <Fill>
+        <FillForegnd>#F0F4C3</FillForegnd>
+      </Fill>
+    </Shape>
+    <Shape ID="601" Type="Shape" Name="MainWindow">
+      <XForm>
+        <PinX>3.5</PinX>
+        <PinY>8.5</PinY>
+        <Width>1.6</Width>
+        <Height>0.7</Height>
+      </XForm>
+      <Text>
+        <cp IX="0">MainWindow</cp>
+      </Text>
+      <Fill>
+        <FillForegnd>#F3E5F5</FillForegnd>
+      </Fill>
+    </Shape>
+    <Shape ID="602" Type="Shape" Name="ARXMLEditorApp">
+      <XForm>
+        <PinX>5.5</PinX>
+        <PinY>8.5</PinY>
+        <Width>1.6</Width>
+        <Height>0.7</Height>
+      </XForm>
+      <Text>
+        <cp IX="0">ARXMLEditorApp</cp>
+      </Text>
+      <Fill>
+        <FillForegnd>#E1F5FE</FillForegnd>
+      </Fill>
+    </Shape>
+    <Shape ID="603" Type="Shape" Name="ARXMLParser">
+      <XForm>
+        <PinX>7.5</PinX>
+        <PinY>8.5</PinY>
+        <Width>1.6</Width>
+        <Height>0.7</Height>
+      </XForm>
+      <Text>
+        <cp IX="0">ARXMLParser</cp>
+      </Text>
+      <Fill>
+        <FillForegnd>#FFF3E0</FillForegnd>
+      </Fill>
+    </Shape>
+    <Shape ID="700" Type="Connector" Name="Connector_700">
+      <XForm>
+        <PinX>2.5</PinX>
+        <PinY>8.5</PinY>
+        <Width>1.5999999999999999</Width>
+        <Height>0.2</Height>
+      </XForm>
+      <Text>
+        <cp IX="0">open file</cp>
+      </Text>
+      <Line>
+        <LineColor>#000000</LineColor>
+        <LinePattern>1</LinePattern>
+      </Line>
+    </Shape>
+    <Shape ID="701" Type="Connector" Name="Connector_701">
+      <XForm>
+        <PinX>4.5</PinX>
+        <PinY>8.5</PinY>
+        <Width>1.5999999999999996</Width>
+        <Height>0.2</Height>
+      </XForm>
+      <Text>
+        <cp IX="0">load_document</cp>
+      </Text>
+      <Line>
+        <LineColor>#000000</LineColor>
+        <LinePattern>1</LinePattern>
+      </Line>
+    </Shape>
+    <Shape ID="702" Type="Connector" Name="Connector_702">
+      <XForm>
+        <PinX>6.5</PinX>
+        <PinY>8.5</PinY>
+        <Width>1.5999999999999996</Width>
+        <Height>0.2</Height>
+      </XForm>
+      <Text>
+        <cp IX="0">parse</cp>
+      </Text>
+      <Line>
+        <LineColor>#000000</LineColor>
+        <LinePattern>1</LinePattern>
+      </Line>
+    </Shape>
+    </Shapes>
+  </Page>
+</VisioDocument>

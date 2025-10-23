@@ -6,9 +6,9 @@ Main application window with menu, toolbar, and view management
 from PyQt6.QtWidgets import (
     QMainWindow, QMenuBar, QToolBar, QStatusBar, QSplitter,
     QVBoxLayout, QHBoxLayout, QWidget, QMessageBox,
-    QFileDialog, QApplication, QTabWidget
+    QFileDialog, QApplication, QTabWidget, QSizePolicy
 )
-from PyQt6.QtCore import Qt, pyqtSignal
+from PyQt6.QtCore import Qt, pyqtSignal, QSettings
 from PyQt6.QtGui import QKeySequence, QIcon, QAction
 from .views.tree_navigator import TreeNavigator
 from .views.property_editor import PropertyEditor
@@ -25,9 +25,14 @@ class MainWindow(QMainWindow):
         # Setup dependency injection container
         self._container = setup_container()
         self.app = ARXMLEditorApp(self._container)
+        
+        # Settings for saving/restoring UI state
+        self.settings = QSettings('ARXMLEditor', 'MainWindow')
+        
         self._setup_ui()
         self._connect_signals()
         self._setup_shortcuts()
+        self._restore_ui_state()
     
     def _setup_ui(self):
         """Setup the user interface"""
@@ -42,48 +47,61 @@ class MainWindow(QMainWindow):
         main_layout = QHBoxLayout(central_widget)
         main_layout.setContentsMargins(0, 0, 0, 0)
         
-        # Create main splitter
-        main_splitter = QSplitter(Qt.Orientation.Horizontal)
-        main_layout.addWidget(main_splitter)
+        # Create main horizontal splitter with enhanced configuration
+        self.main_splitter = QSplitter(Qt.Orientation.Horizontal)
+        self.main_splitter.setChildrenCollapsible(False)  # Prevent panels from collapsing
+        self.main_splitter.setHandleWidth(4)  # Make splitter handle more visible
+        main_layout.addWidget(self.main_splitter)
         
         # Left panel (Tree Navigator)
         left_panel = QWidget()
-        left_panel.setMinimumWidth(300)
-        left_panel.setMaximumWidth(400)
+        left_panel.setMinimumWidth(250)  # Reduced minimum, more flexible
+        left_panel.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Expanding)
         left_layout = QVBoxLayout(left_panel)
-        left_layout.setContentsMargins(0, 0, 0, 0)
+        left_layout.setContentsMargins(5, 5, 5, 5)
         
         self.tree_navigator = TreeNavigator(self.app)
         left_layout.addWidget(self.tree_navigator)
         
-        # Right panel with tabs
+        # Right panel with vertical splitter for tabs
         right_panel = QWidget()
         right_layout = QVBoxLayout(right_panel)
-        right_layout.setContentsMargins(0, 0, 0, 0)
+        right_layout.setContentsMargins(5, 5, 5, 5)
         
-        # Create tab widget
+        # Create vertical splitter for right panel tabs
+        self.right_splitter = QSplitter(Qt.Orientation.Vertical)
+        self.right_splitter.setChildrenCollapsible(False)
+        self.right_splitter.setHandleWidth(4)
+        
+        # Create tab widget for upper right area
         self.tab_widget = QTabWidget()
         
         # Property Editor tab
         self.property_editor = PropertyEditor(self.app)
         self.tab_widget.addTab(self.property_editor, "Properties")
         
-        # Validation List tab
-        self.validation_list = ValidationList(self.app)
-        self.tab_widget.addTab(self.validation_list, "Validation")
-        
         # Diagram View tab
         self.diagram_view = DiagramView(self.app)
         self.tab_widget.addTab(self.diagram_view, "Diagram")
         
-        right_layout.addWidget(self.tab_widget)
+        # Validation List as separate panel in vertical splitter
+        self.validation_list = ValidationList(self.app)
         
-        # Add panels to main splitter
-        main_splitter.addWidget(left_panel)
-        main_splitter.addWidget(right_panel)
+        # Add widgets to vertical splitter
+        self.right_splitter.addWidget(self.tab_widget)
+        self.right_splitter.addWidget(self.validation_list)
         
-        # Set main splitter proportions
-        main_splitter.setSizes([300, 1100])
+        # Set initial proportions for vertical splitter (properties larger than validation)
+        self.right_splitter.setSizes([600, 200])
+        
+        right_layout.addWidget(self.right_splitter)
+        
+        # Add panels to main horizontal splitter
+        self.main_splitter.addWidget(left_panel)
+        self.main_splitter.addWidget(right_panel)
+        
+        # Set initial main splitter proportions (will be overridden by saved settings)
+        self.main_splitter.setSizes([350, 1050])
         
         # Create menu bar
         self._create_menu_bar()
@@ -234,16 +252,70 @@ class MainWindow(QMainWindow):
         self.app.validation_changed.connect(self._on_validation_changed)
         self.app.command_stack_changed.connect(self._on_command_stack_changed)
         
-        # Connect tree navigator to property editor
-        self.tree_navigator.element_selected.connect(self.property_editor.set_element)
+        # Connect tree navigator to property editor with improved sync
+        self.tree_navigator.element_selected.connect(self._on_element_selected)
+        self.tree_navigator.element_double_clicked.connect(self._on_element_double_clicked)
         
         # Connect property editor to tree navigator for updates
         self.property_editor.property_changed.connect(self._on_property_changed)
+        
+        # Track splitter state changes for auto-save
+        self.main_splitter.splitterMoved.connect(self._save_splitter_state)
+        self.right_splitter.splitterMoved.connect(self._save_splitter_state)
     
     def _setup_shortcuts(self):
         """Setup keyboard shortcuts"""
         # Additional shortcuts can be added here
         pass
+    
+    def _save_splitter_state(self):
+        """Save splitter positions to settings"""
+        self.settings.setValue('main_splitter_state', self.main_splitter.saveState())
+        self.settings.setValue('right_splitter_state', self.right_splitter.saveState())
+        self.settings.setValue('main_splitter_sizes', self.main_splitter.sizes())
+        self.settings.setValue('right_splitter_sizes', self.right_splitter.sizes())
+    
+    def _restore_ui_state(self):
+        """Restore UI state from settings"""
+        # Restore window geometry
+        geometry = self.settings.value('geometry')
+        if geometry:
+            self.restoreGeometry(geometry)
+        
+        # Restore splitter states
+        main_state = self.settings.value('main_splitter_state')
+        if main_state:
+            self.main_splitter.restoreState(main_state)
+        
+        right_state = self.settings.value('right_splitter_state')
+        if right_state:
+            self.right_splitter.restoreState(right_state)
+        
+        # Restore splitter sizes as fallback
+        main_sizes = self.settings.value('main_splitter_sizes')
+        if main_sizes:
+            try:
+                sizes = [int(size) for size in main_sizes]
+                self.main_splitter.setSizes(sizes)
+            except (ValueError, TypeError):
+                pass  # Use default sizes
+        
+        right_sizes = self.settings.value('right_splitter_sizes')
+        if right_sizes:
+            try:
+                sizes = [int(size) for size in right_sizes]
+                self.right_splitter.setSizes(sizes)
+            except (ValueError, TypeError):
+                pass  # Use default sizes
+    
+    def closeEvent(self, event):
+        """Handle window close event to save state"""
+        # Save window geometry and splitter states
+        self.settings.setValue('geometry', self.saveGeometry())
+        self._save_splitter_state()
+        
+        # Call parent close event
+        super().closeEvent(event)
     
     def _new_document(self):
         """Create new document"""
@@ -349,6 +421,9 @@ class MainWindow(QMainWindow):
     
     def _on_document_changed(self):
         """Handle document changed signal"""
+        # Remember current selection before refresh
+        current_element = self.property_editor._current_element if hasattr(self.property_editor, '_current_element') else None
+        
         # Update UI components
         self.tree_navigator.refresh()
         self.property_editor.clear()
@@ -359,17 +434,33 @@ class MainWindow(QMainWindow):
         
         self.validation_list.refresh()
         
-        # Update window title
+        # Update window title and status
         self._update_title()
+        
+        # Update status bar
+        if self.app.current_document:
+            filename = self.app.current_document.file_path.split('/')[-1] if self.app.current_document.file_path else "Untitled"
+            self.status_bar.showMessage(f"Document loaded: {filename}")
+        else:
+            self.status_bar.showMessage("No document loaded")
     
     def _on_validation_changed(self):
-        """Handle validation changed signal"""
+        """Handle validation changed signal with enhanced feedback"""
         self.validation_list.refresh()
         error_count = self.app.validation_service.error_count
         warning_count = self.app.validation_service.warning_count
+        info_count = getattr(self.app.validation_service, 'info_count', 0)
         
+        # Update status bar with detailed counts
         if error_count > 0 or warning_count > 0:
-            self.status_bar.showMessage(f"Validation: {error_count} errors, {warning_count} warnings")
+            self.status_bar.showMessage(f"Validation: {error_count} errors, {warning_count} warnings, {info_count} info")
+            
+            # Auto-show validation panel if there are errors
+            if error_count > 0:
+                current_sizes = self.right_splitter.sizes()
+                if len(current_sizes) == 2 and current_sizes[1] < 100:  # If validation panel is too small
+                    total_height = sum(current_sizes)
+                    self.right_splitter.setSizes([int(total_height * 0.7), int(total_height * 0.3)])
         else:
             self.status_bar.showMessage("Validation: No issues")
     
@@ -378,18 +469,38 @@ class MainWindow(QMainWindow):
         # Update undo/redo button states
         pass
     
-    def _on_property_changed(self, element, property_name: str, new_value):
-        """Handle property changes"""
+    def _on_element_selected(self, element):
+        """Handle element selection from tree navigator"""
+        # Set element in property editor and switch to Properties tab
+        self.property_editor.set_element(element)
+        self.tab_widget.setCurrentWidget(self.property_editor)
+        
+        # Update status bar with element info
+        if element:
+            element_type = type(element).__name__
+            element_name = getattr(element, 'short_name', 'Unnamed')
+            self.status_bar.showMessage(f"Selected: {element_type} - {element_name}")
+        else:
+            self.status_bar.showMessage("No element selected")
+    
+    def _on_element_double_clicked(self, element):
+        """Handle element double-click from tree navigator"""
+        # Double-click behavior: focus on property editor and expand element details
+        self._on_element_selected(element)
+        # You could add additional behavior here like opening in a new tab or dialog
+    
+    def _on_property_changed(self, element, property_name, new_value):
+        """Handle property changes with enhanced synchronization"""
+        # Refresh tree to show updated names/properties
+        self.tree_navigator.refresh()
+        
         # Mark document as modified
-        if hasattr(self.app, 'current_document') and self.app.current_document:
-            self.app.current_document.set_modified(True)
+        self.app.mark_document_modified()
         
-        # If short_name changed, update the tree display
-        if property_name == 'short_name':
-            self.tree_navigator.update_element_name_in_tree(element, new_value)
-        
-        # Update window title
-        self._update_title()
+        # Update status bar
+        element_type = type(element).__name__
+        element_name = getattr(element, 'short_name', 'Unnamed')
+        self.status_bar.showMessage(f"Modified: {element_type}.{property_name} = {new_value}")
     
     def _update_title(self):
         """Update window title based on document state"""
