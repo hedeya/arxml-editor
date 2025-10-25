@@ -12,43 +12,43 @@
 </text>
 <rect x="20.0" y="194.99999999999994" width="240.0" height="70.0" fill="#E8F5E8" stroke="#333" stroke-width="1" rx="6"/>
 <text x="28.0" y="210.99999999999994" font-family="sans-serif" font-size="12">
-<tspan x="28.0" y="210.99999999999994">setup_container</tspan>
+<tspan x="28.0" y="210.99999999999994">main</tspan>
 <tspan x="28.0" y="224.99999999999994">-</tspan>
 </text>
 <rect x="20.0" y="294.99999999999994" width="240.0" height="70.0" fill="#E8F5E8" stroke="#333" stroke-width="1" rx="6"/>
 <text x="28.0" y="310.99999999999994" font-family="sans-serif" font-size="12">
-<tspan x="28.0" y="310.99999999999994">from_qobject_data_element</tspan>
-<tspan x="28.0" y="324.99999999999994">- qobj</tspan>
+<tspan x="28.0" y="310.99999999999994">main</tspan>
+<tspan x="28.0" y="324.99999999999994">-</tspan>
 </text>
 <rect x="20.0" y="394.99999999999994" width="240.0" height="70.0" fill="#E8F5E8" stroke="#333" stroke-width="1" rx="6"/>
 <text x="28.0" y="410.99999999999994" font-family="sans-serif" font-size="12">
-<tspan x="28.0" y="410.99999999999994">from_qobject_port_interface</tspan>
-<tspan x="28.0" y="424.99999999999994">- qobj</tspan>
+<tspan x="28.0" y="410.99999999999994">setup_container</tspan>
+<tspan x="28.0" y="424.99999999999994">-</tspan>
 </text>
 <rect x="20.0" y="495.0" width="240.0" height="70.0" fill="#E8F5E8" stroke="#333" stroke-width="1" rx="6"/>
 <text x="28.0" y="511.0" font-family="sans-serif" font-size="12">
-<tspan x="28.0" y="511.0">to_qobject_port_interface</tspan>
-<tspan x="28.0" y="525.0">- domain_obj, qobj_factory</tspan>
+<tspan x="28.0" y="511.0">from_qobject_data_element</tspan>
+<tspan x="28.0" y="525.0">- qobj</tspan>
 </text>
 <rect x="20.0" y="595.0" width="240.0" height="70.0" fill="#E8F5E8" stroke="#333" stroke-width="1" rx="6"/>
 <text x="28.0" y="611.0" font-family="sans-serif" font-size="12">
-<tspan x="28.0" y="611.0">from_qobject_sw_component_type</tspan>
+<tspan x="28.0" y="611.0">from_qobject_port_interface</tspan>
 <tspan x="28.0" y="625.0">- qobj</tspan>
 </text>
 <rect x="20.0" y="695.0" width="240.0" height="70.0" fill="#E8F5E8" stroke="#333" stroke-width="1" rx="6"/>
 <text x="28.0" y="711.0" font-family="sans-serif" font-size="12">
-<tspan x="28.0" y="711.0">to_qobject_sw_component_type</tspan>
+<tspan x="28.0" y="711.0">to_qobject_port_interface</tspan>
 <tspan x="28.0" y="725.0">- domain_obj, qobj_factory</tspan>
 </text>
 <rect x="20.0" y="795.0" width="240.0" height="70.0" fill="#E8F5E8" stroke="#333" stroke-width="1" rx="6"/>
 <text x="28.0" y="811.0" font-family="sans-serif" font-size="12">
-<tspan x="28.0" y="811.0">main</tspan>
-<tspan x="28.0" y="825.0">-</tspan>
+<tspan x="28.0" y="811.0">from_qobject_sw_component_type</tspan>
+<tspan x="28.0" y="825.0">- qobj</tspan>
 </text>
 <rect x="20.0" y="895.0" width="240.0" height="70.0" fill="#E8F5E8" stroke="#333" stroke-width="1" rx="6"/>
 <text x="28.0" y="911.0" font-family="sans-serif" font-size="12">
-<tspan x="28.0" y="911.0">main</tspan>
-<tspan x="28.0" y="925.0">-</tspan>
+<tspan x="28.0" y="911.0">to_qobject_sw_component_type</tspan>
+<tspan x="28.0" y="925.0">- domain_obj, qobj_factory</tspan>
 </text>
 <line x1="20.0" y1="164.99999999999997" x2="260.0" y2="265.0" stroke="#000" stroke-width="2" marker-end="url(#arrow)"/>
 <text x="140.0" y="209.0" font-family="sans-serif" font-size="12" text-anchor="middle">from_qobject_port_interface-&gt;from_qobject_data_element</text>
