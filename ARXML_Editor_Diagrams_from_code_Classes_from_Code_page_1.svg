@@ -12,179 +12,201 @@
 <tspan x="28.0" y="82.00000000000001">- create_main_window</tspan>
 <tspan x="28.0" y="96.00000000000001">- create_legacy_application</tspan>
 </text>
-<rect x="300.0" y="32.000000000000014" width="260.0" height="108.0" fill="#E8F5E8" stroke="#333" stroke-width="1" rx="6"/>
-<text x="308.0" y="48.000000000000014" font-family="sans-serif" font-size="12">
-<tspan x="308.0" y="48.000000000000014">ISchemaService</tspan>
-<tspan x="308.0" y="62.000000000000014">- set_version</tspan>
-<tspan x="308.0" y="76.00000000000001">- validate_arxml</tspan>
-<tspan x="308.0" y="90.00000000000001">-</tspan>
-<tspan x="308.0" y="104.00000000000001">detect_schema_version_from_file</tspan>
-<tspan x="308.0" y="118.00000000000001">- get_available_versions</tspan>
+<rect x="300.0" y="20.00000000000002" width="260.0" height="131.99999999999997" fill="#F3E5F5" stroke="#333" stroke-width="1" rx="6"/>
+<text x="308.0" y="36.00000000000002" font-family="sans-serif" font-size="12">
+<tspan x="308.0" y="36.00000000000002">TkinterMainWindow</tspan>
+<tspan x="308.0" y="50.00000000000002">- __init__</tspan>
+<tspan x="308.0" y="64.00000000000003">- create_widgets</tspan>
+<tspan x="308.0" y="78.00000000000003">- create_menu</tspan>
+<tspan x="308.0" y="92.00000000000003">- create_tree_panel</tspan>
+<tspan x="308.0" y="106.00000000000003">- create_property_panel</tspan>
+<tspan x="308.0" y="120.00000000000003">- create_properties_tab</tspan>
 </text>
-<rect x="580.0" y="20.00000000000002" width="260.0" height="131.99999999999997" fill="#E8F5E8" stroke="#333" stroke-width="1" rx="6"/>
+<rect x="580.0" y="20.00000000000002" width="260.0" height="131.99999999999997" fill="#F3E5F5" stroke="#333" stroke-width="1" rx="6"/>
 <text x="588.0" y="36.00000000000002" font-family="sans-serif" font-size="12">
-<tspan x="588.0" y="36.00000000000002">IValidationService</tspan>
-<tspan x="588.0" y="50.00000000000002">- validate_document</tspan>
-<tspan x="588.0" y="64.00000000000003">- validate_element</tspan>
-<tspan x="588.0" y="78.00000000000003">- clear_issues</tspan>
-<tspan x="588.0" y="92.00000000000003">- error_count</tspan>
-<tspan x="588.0" y="106.00000000000003">- warning_count</tspan>
-<tspan x="588.0" y="120.00000000000003">- issues</tspan>
+<tspan x="588.0" y="36.00000000000002">MainWindow</tspan>
+<tspan x="588.0" y="50.00000000000002">- __init__</tspan>
+<tspan x="588.0" y="64.00000000000003">- _setup_ui</tspan>
+<tspan x="588.0" y="78.00000000000003">- _create_menu_bar</tspan>
+<tspan x="588.0" y="92.00000000000003">- _create_toolbar</tspan>
+<tspan x="588.0" y="106.00000000000003">- _create_status_bar</tspan>
+<tspan x="588.0" y="120.00000000000003">- _connect_signals</tspan>
 </text>
-<rect x="20.0" y="166.00000000000003" width="260.0" height="120.0" fill="#E8F5E8" stroke="#333" stroke-width="1" rx="6"/>
-<text x="28.0" y="182.00000000000003" font-family="sans-serif" font-size="12">
-<tspan x="28.0" y="182.00000000000003">ICommandService</tspan>
-<tspan x="28.0" y="196.00000000000003">- execute_command</tspan>
-<tspan x="28.0" y="210.00000000000003">- undo</tspan>
-<tspan x="28.0" y="224.00000000000003">- redo</tspan>
-<tspan x="28.0" y="238.00000000000003">- can_undo</tspan>
-<tspan x="28.0" y="252.00000000000003">- can_redo</tspan>
+<rect x="20.0" y="160.00000000000006" width="260.0" height="131.99999999999997" fill="#F3E5F5" stroke="#333" stroke-width="1" rx="6"/>
+<text x="28.0" y="176.00000000000006" font-family="sans-serif" font-size="12">
+<tspan x="28.0" y="176.00000000000006">TkinterMainWindow</tspan>
+<tspan x="28.0" y="190.00000000000006">- __init__</tspan>
+<tspan x="28.0" y="204.00000000000006">- create_widgets</tspan>
+<tspan x="28.0" y="218.00000000000006">- create_menu</tspan>
+<tspan x="28.0" y="232.00000000000006">- create_tree_panel</tspan>
+<tspan x="28.0" y="246.00000000000006">- create_property_panel</tspan>
+<tspan x="28.0" y="260.00000000000006">- create_properties_tab</tspan>
 </text>
-<rect x="300.0" y="166.00000000000003" width="260.0" height="120.0" fill="#FFF3E0" stroke="#333" stroke-width="1" rx="6"/>
-<text x="308.0" y="182.00000000000003" font-family="sans-serif" font-size="12">
-<tspan x="308.0" y="182.00000000000003">IARXMLParser</tspan>
-<tspan x="308.0" y="196.00000000000003">- parse_arxml_file</tspan>
-<tspan x="308.0" y="210.00000000000003">- parse_sw_component_types</tspan>
-<tspan x="308.0" y="224.00000000000003">- parse_port_interfaces</tspan>
-<tspan x="308.0" y="238.00000000000003">- parse_service_interfaces</tspan>
-<tspan x="308.0" y="252.00000000000003">- parse_compositions</tspan>
+<rect x="300.0" y="160.00000000000006" width="260.0" height="131.99999999999997" fill="#E8F5E8" stroke="#333" stroke-width="1" rx="6"/>
+<text x="308.0" y="176.00000000000006" font-family="sans-serif" font-size="12">
+<tspan x="308.0" y="176.00000000000006">ValidationList</tspan>
+<tspan x="308.0" y="190.00000000000006">- __init__</tspan>
+<tspan x="308.0" y="204.00000000000006">- _setup_ui</tspan>
+<tspan x="308.0" y="218.00000000000006">- _connect_signals</tspan>
+<tspan x="308.0" y="232.00000000000006">- refresh</tspan>
+<tspan x="308.0" y="246.00000000000006">- _add_issue_item</tspan>
+<tspan x="308.0" y="260.00000000000006">- _get_severity_icon</tspan>
 </text>
 <rect x="580.0" y="160.00000000000006" width="260.0" height="131.99999999999997" fill="#E8F5E8" stroke="#333" stroke-width="1" rx="6"/>
 <text x="588.0" y="176.00000000000006" font-family="sans-serif" font-size="12">
-<tspan x="588.0" y="176.00000000000006">DIContainer</tspan>
+<tspan x="588.0" y="176.00000000000006">TreeNavigator</tspan>
 <tspan x="588.0" y="190.00000000000006">- __init__</tspan>
-<tspan x="588.0" y="204.00000000000006">- register_singleton</tspan>
-<tspan x="588.0" y="218.00000000000006">- register_transient</tspan>
-<tspan x="588.0" y="232.00000000000006">- register_factory</tspan>
-<tspan x="588.0" y="246.00000000000006">- register_instance</tspan>
-<tspan x="588.0" y="260.00000000000006">- get</tspan>
+<tspan x="588.0" y="204.00000000000006">- _setup_ui</tspan>
+<tspan x="588.0" y="218.00000000000006">- _connect_signals</tspan>
+<tspan x="588.0" y="232.00000000000006">- _setup_context_menu</tspan>
+<tspan x="588.0" y="246.00000000000006">- _show_context_menu</tspan>
+<tspan x="588.0" y="260.00000000000006">- refresh</tspan>
 </text>
-<rect x="20.0" y="300.0" width="260.0" height="131.99999999999997" fill="#E8F5E8" stroke="#333" stroke-width="1" rx="6"/>
-<text x="28.0" y="316.0" font-family="sans-serif" font-size="12">
-<tspan x="28.0" y="316.0">ARXMLEditorApp</tspan>
-<tspan x="28.0" y="330.0">- __init__</tspan>
-<tspan x="28.0" y="344.0">- current_document</tspan>
-<tspan x="28.0" y="358.0">- validation_service</tspan>
-<tspan x="28.0" y="372.0">- command_service</tspan>
-<tspan x="28.0" y="386.0">- schema_service</tspan>
-<tspan x="28.0" y="400.0">- arxml_parser</tspan>
+<rect x="20.0" y="324.0" width="260.0" height="84.0" fill="#E8F5E8" stroke="#333" stroke-width="1" rx="6"/>
+<text x="28.0" y="340.0" font-family="sans-serif" font-size="12">
+<tspan x="28.0" y="340.0">ComponentBox</tspan>
+<tspan x="28.0" y="354.0">- __init__</tspan>
+<tspan x="28.0" y="368.0">- _add_port_indicators</tspan>
 </text>
-<rect x="300.0" y="336.0" width="260.0" height="60.0" fill="#E8F5E8" stroke="#333" stroke-width="1" rx="6"/>
-<text x="308.0" y="352.0" font-family="sans-serif" font-size="12">
-<tspan x="308.0" y="352.0">PortType</tspan>
+<rect x="300.0" y="300.0" width="260.0" height="131.99999999999997" fill="#E8F5E8" stroke="#333" stroke-width="1" rx="6"/>
+<text x="308.0" y="316.0" font-family="sans-serif" font-size="12">
+<tspan x="308.0" y="316.0">DiagramView</tspan>
+<tspan x="308.0" y="330.0">- __init__</tspan>
+<tspan x="308.0" y="344.0">- _setup_ui</tspan>
+<tspan x="308.0" y="358.0">- _connect_signals</tspan>
+<tspan x="308.0" y="372.0">- _show_placeholder</tspan>
+<tspan x="308.0" y="386.0">- refresh</tspan>
+<tspan x="308.0" y="400.0">- _show_file_information</tspan>
 </text>
-<rect x="580.0" y="336.0" width="260.0" height="60.0" fill="#E8F5E8" stroke="#333" stroke-width="1" rx="6"/>
-<text x="588.0" y="352.0" font-family="sans-serif" font-size="12">
-<tspan x="588.0" y="352.0">DataType</tspan>
+<rect x="580.0" y="300.0" width="260.0" height="131.99999999999997" fill="#E8F5E8" stroke="#333" stroke-width="1" rx="6"/>
+<text x="588.0" y="316.0" font-family="sans-serif" font-size="12">
+<tspan x="588.0" y="316.0">PropertyEditor</tspan>
+<tspan x="588.0" y="330.0">- __init__</tspan>
+<tspan x="588.0" y="344.0">- _monitor_log</tspan>
+<tspan x="588.0" y="358.0">- _setup_ui</tspan>
+<tspan x="588.0" y="372.0">- _connect_signals</tspan>
+<tspan x="588.0" y="386.0">- _show_empty_state</tspan>
+<tspan x="588.0" y="400.0">- _clear_properties</tspan>
 </text>
-<rect x="20.0" y="475.99999999999994" width="260.0" height="60.0" fill="#E8F5E8" stroke="#333" stroke-width="1" rx="6"/>
-<text x="28.0" y="491.99999999999994" font-family="sans-serif" font-size="12">
-<tspan x="28.0" y="491.99999999999994">SwComponentTypeCategory</tspan>
+<rect x="20.0" y="457.9999999999999" width="260.0" height="96.0" fill="#E8F5E8" stroke="#333" stroke-width="1" rx="6"/>
+<text x="28.0" y="473.9999999999999" font-family="sans-serif" font-size="12">
+<tspan x="28.0" y="473.9999999999999">UIEventAdapter</tspan>
+<tspan x="28.0" y="487.9999999999999">- __init__</tspan>
+<tspan x="28.0" y="501.9999999999999">- _on_element_changed</tspan>
+<tspan x="28.0" y="515.9999999999999">- dispose</tspan>
 </text>
 <rect x="300.0" y="439.99999999999994" width="260.0" height="131.99999999999997" fill="#E8F5E8" stroke="#333" stroke-width="1" rx="6"/>
 <text x="308.0" y="455.99999999999994" font-family="sans-serif" font-size="12">
-<tspan x="308.0" y="455.99999999999994">BaseElement</tspan>
+<tspan x="308.0" y="455.99999999999994">ARXMLEditorApp</tspan>
 <tspan x="308.0" y="469.99999999999994">- __init__</tspan>
-<tspan x="308.0" y="483.99999999999994">- set_event_bus</tspan>
-<tspan x="308.0" y="497.99999999999994">- set_ui_event_bus</tspan>
-<tspan x="308.0" y="511.99999999999994">- add_domain_event</tspan>
-<tspan x="308.0" y="526.0">- get_domain_events</tspan>
-<tspan x="308.0" y="540.0">- clear_domain_events</tspan>
+<tspan x="308.0" y="483.99999999999994">- current_document</tspan>
+<tspan x="308.0" y="497.99999999999994">- validation_service</tspan>
+<tspan x="308.0" y="511.99999999999994">- command_service</tspan>
+<tspan x="308.0" y="526.0">- schema_service</tspan>
+<tspan x="308.0" y="540.0">- arxml_parser</tspan>
 </text>
-<rect x="580.0" y="439.99999999999994" width="260.0" height="131.99999999999997" fill="#E8F5E8" stroke="#333" stroke-width="1" rx="6"/>
-<text x="588.0" y="455.99999999999994" font-family="sans-serif" font-size="12">
-<tspan x="588.0" y="455.99999999999994">DataElement</tspan>
-<tspan x="588.0" y="469.99999999999994">- __init__</tspan>
-<tspan x="588.0" y="483.99999999999994">- validate_invariants</tspan>
-<tspan x="588.0" y="497.99999999999994">- _is_valid_unit</tspan>
-<tspan x="588.0" y="511.99999999999994">- is_compatible_with</tspan>
-<tspan x="588.0" y="526.0">- get_size_in_bytes</tspan>
-<tspan x="588.0" y="540.0">- can_be_used_in_interface</tspan>
+<rect x="580.0" y="451.99999999999994" width="260.0" height="108.0" fill="#E8F5E8" stroke="#333" stroke-width="1" rx="6"/>
+<text x="588.0" y="467.99999999999994" font-family="sans-serif" font-size="12">
+<tspan x="588.0" y="467.99999999999994">ISchemaService</tspan>
+<tspan x="588.0" y="481.99999999999994">- set_version</tspan>
+<tspan x="588.0" y="495.99999999999994">- validate_arxml</tspan>
+<tspan x="588.0" y="509.99999999999994">-</tspan>
+<tspan x="588.0" y="524.0">detect_schema_version_from_file</tspan>
+<tspan x="588.0" y="538.0">- get_available_versions</tspan>
 </text>
 <rect x="20.0" y="580.0" width="260.0" height="131.99999999999997" fill="#E8F5E8" stroke="#333" stroke-width="1" rx="6"/>
 <text x="28.0" y="596.0" font-family="sans-serif" font-size="12">
-<tspan x="28.0" y="596.0">PortInterface</tspan>
-<tspan x="28.0" y="610.0">- __init__</tspan>
-<tspan x="28.0" y="624.0">- add_data_element</tspan>
-<tspan x="28.0" y="638.0">- remove_data_element</tspan>
-<tspan x="28.0" y="652.0">- change_name</tspan>
-<tspan x="28.0" y="666.0">- validate_invariants</tspan>
-<tspan x="28.0" y="680.0">- _is_valid_interface_name</tspan>
+<tspan x="28.0" y="596.0">IValidationService</tspan>
+<tspan x="28.0" y="610.0">- validate_document</tspan>
+<tspan x="28.0" y="624.0">- validate_element</tspan>
+<tspan x="28.0" y="638.0">- clear_issues</tspan>
+<tspan x="28.0" y="652.0">- error_count</tspan>
+<tspan x="28.0" y="666.0">- warning_count</tspan>
+<tspan x="28.0" y="680.0">- issues</tspan>
 </text>
-<rect x="300.0" y="610.0" width="260.0" height="72.0" fill="#E8F5E8" stroke="#333" stroke-width="1" rx="6"/>
-<text x="308.0" y="626.0" font-family="sans-serif" font-size="12">
-<tspan x="308.0" y="626.0">ServiceElement</tspan>
-<tspan x="308.0" y="640.0">- __init__</tspan>
+<rect x="300.0" y="586.0" width="260.0" height="120.0" fill="#E8F5E8" stroke="#333" stroke-width="1" rx="6"/>
+<text x="308.0" y="602.0" font-family="sans-serif" font-size="12">
+<tspan x="308.0" y="602.0">ICommandService</tspan>
+<tspan x="308.0" y="616.0">- execute_command</tspan>
+<tspan x="308.0" y="630.0">- undo</tspan>
+<tspan x="308.0" y="644.0">- redo</tspan>
+<tspan x="308.0" y="658.0">- can_undo</tspan>
+<tspan x="308.0" y="672.0">- can_redo</tspan>
 </text>
-<rect x="580.0" y="610.0" width="260.0" height="72.0" fill="#E8F5E8" stroke="#333" stroke-width="1" rx="6"/>
-<text x="588.0" y="626.0" font-family="sans-serif" font-size="12">
-<tspan x="588.0" y="626.0">ServiceOperation</tspan>
-<tspan x="588.0" y="640.0">- __init__</tspan>
+<rect x="580.0" y="586.0" width="260.0" height="120.0" fill="#FFF3E0" stroke="#333" stroke-width="1" rx="6"/>
+<text x="588.0" y="602.0" font-family="sans-serif" font-size="12">
+<tspan x="588.0" y="602.0">IARXMLParser</tspan>
+<tspan x="588.0" y="616.0">- parse_arxml_file</tspan>
+<tspan x="588.0" y="630.0">- parse_sw_component_types</tspan>
+<tspan x="588.0" y="644.0">- parse_port_interfaces</tspan>
+<tspan x="588.0" y="658.0">- parse_service_interfaces</tspan>
+<tspan x="588.0" y="672.0">- parse_compositions</tspan>
 </text>
-<rect x="20.0" y="744.0" width="260.0" height="84.0" fill="#E8F5E8" stroke="#333" stroke-width="1" rx="6"/>
-<text x="28.0" y="760.0" font-family="sans-serif" font-size="12">
-<tspan x="28.0" y="760.0">ServiceInterface</tspan>
-<tspan x="28.0" y="774.0">- __init__</tspan>
-<tspan x="28.0" y="788.0">- add_service_element</tspan>
+<rect x="20.0" y="720.0" width="260.0" height="131.99999999999997" fill="#E8F5E8" stroke="#333" stroke-width="1" rx="6"/>
+<text x="28.0" y="736.0" font-family="sans-serif" font-size="12">
+<tspan x="28.0" y="736.0">DIContainer</tspan>
+<tspan x="28.0" y="750.0">- __init__</tspan>
+<tspan x="28.0" y="764.0">- register_singleton</tspan>
+<tspan x="28.0" y="778.0">- register_transient</tspan>
+<tspan x="28.0" y="792.0">- register_factory</tspan>
+<tspan x="28.0" y="806.0">- register_instance</tspan>
+<tspan x="28.0" y="820.0">- get</tspan>
 </text>
 <rect x="300.0" y="720.0" width="260.0" height="131.99999999999997" fill="#E8F5E8" stroke="#333" stroke-width="1" rx="6"/>
 <text x="308.0" y="736.0" font-family="sans-serif" font-size="12">
-<tspan x="308.0" y="736.0">PortPrototype</tspan>
+<tspan x="308.0" y="736.0">ARXMLDocument</tspan>
 <tspan x="308.0" y="750.0">- __init__</tspan>
-<tspan x="308.0" y="764.0">- connect_to</tspan>
-<tspan x="308.0" y="778.0">- disconnect_from</tspan>
-<tspan x="308.0" y="792.0">- can_connect_to</tspan>
-<tspan x="308.0" y="806.0">- _are_port_types_compatible</tspan>
-<tspan x="308.0" y="820.0">- validate_invariants</tspan>
+<tspan x="308.0" y="764.0">- file_path</tspan>
+<tspan x="308.0" y="778.0">- schema_version</tspan>
+<tspan x="308.0" y="792.0">- modified</tspan>
+<tspan x="308.0" y="806.0">- set_modified</tspan>
+<tspan x="308.0" y="820.0">- sw_component_types</tspan>
 </text>
-<rect x="580.0" y="720.0" width="260.0" height="131.99999999999997" fill="#E8F5E8" stroke="#333" stroke-width="1" rx="6"/>
-<text x="588.0" y="736.0" font-family="sans-serif" font-size="12">
-<tspan x="588.0" y="736.0">SwComponentType</tspan>
-<tspan x="588.0" y="750.0">- __init__</tspan>
-<tspan x="588.0" y="764.0">- add_port</tspan>
-<tspan x="588.0" y="778.0">- remove_port</tspan>
-<tspan x="588.0" y="792.0">- change_name</tspan>
-<tspan x="588.0" y="806.0">- change_category</tspan>
-<tspan x="588.0" y="820.0">- validate_invariants</tspan>
+<rect x="580.0" y="756.0" width="260.0" height="60.0" fill="#E8F5E8" stroke="#333" stroke-width="1" rx="6"/>
+<text x="588.0" y="772.0" font-family="sans-serif" font-size="12">
+<tspan x="588.0" y="772.0">PortType</tspan>
 </text>
-<rect x="20.0" y="889.9999999999999" width="260.0" height="72.0" fill="#E8F5E8" stroke="#333" stroke-width="1" rx="6"/>
-<text x="28.0" y="905.9999999999999" font-family="sans-serif" font-size="12">
-<tspan x="28.0" y="905.9999999999999">ApplicationSwComponentType</tspan>
-<tspan x="28.0" y="919.9999999999999">- __init__</tspan>
+<rect x="20.0" y="895.9999999999998" width="260.0" height="60.0" fill="#E8F5E8" stroke="#333" stroke-width="1" rx="6"/>
+<text x="28.0" y="911.9999999999998" font-family="sans-serif" font-size="12">
+<tspan x="28.0" y="911.9999999999998">DataType</tspan>
 </text>
-<rect x="300.0" y="889.9999999999999" width="260.0" height="72.0" fill="#E8F5E8" stroke="#333" stroke-width="1" rx="6"/>
-<text x="308.0" y="905.9999999999999" font-family="sans-serif" font-size="12">
-<tspan x="308.0" y="905.9999999999999">AtomicSwComponentType</tspan>
-<tspan x="308.0" y="919.9999999999999">- __init__</tspan>
+<rect x="300.0" y="895.9999999999998" width="260.0" height="60.0" fill="#E8F5E8" stroke="#333" stroke-width="1" rx="6"/>
+<text x="308.0" y="911.9999999999998" font-family="sans-serif" font-size="12">
+<tspan x="308.0" y="911.9999999999998">SwComponentTypeCategory</tspan>
 </text>
-<rect x="580.0" y="889.9999999999999" width="260.0" height="72.0" fill="#E8F5E8" stroke="#333" stroke-width="1" rx="6"/>
-<text x="588.0" y="905.9999999999999" font-family="sans-serif" font-size="12">
-<tspan x="588.0" y="905.9999999999999">CompositionSwComponentType</tspan>
-<tspan x="588.0" y="919.9999999999999">- __init__</tspan>
+<rect x="580.0" y="859.9999999999999" width="260.0" height="131.99999999999997" fill="#E8F5E8" stroke="#333" stroke-width="1" rx="6"/>
+<text x="588.0" y="875.9999999999999" font-family="sans-serif" font-size="12">
+<tspan x="588.0" y="875.9999999999999">BaseElement</tspan>
+<tspan x="588.0" y="889.9999999999999">- __init__</tspan>
+<tspan x="588.0" y="903.9999999999999">- set_event_bus</tspan>
+<tspan x="588.0" y="917.9999999999999">- set_ui_event_bus</tspan>
+<tspan x="588.0" y="931.9999999999999">- add_domain_event</tspan>
+<tspan x="588.0" y="945.9999999999999">- get_domain_events</tspan>
+<tspan x="588.0" y="959.9999999999999">- clear_domain_events</tspan>
 </text>
 <rect x="20.0" y="999.9999999999999" width="260.0" height="131.99999999999997" fill="#E8F5E8" stroke="#333" stroke-width="1" rx="6"/>
 <text x="28.0" y="1015.9999999999999" font-family="sans-serif" font-size="12">
-<tspan x="28.0" y="1015.9999999999999">Composition</tspan>
+<tspan x="28.0" y="1015.9999999999999">DataElement</tspan>
 <tspan x="28.0" y="1030.0">- __init__</tspan>
-<tspan x="28.0" y="1044.0">- add_component_type</tspan>
-<tspan x="28.0" y="1058.0">- remove_component_type</tspan>
-<tspan x="28.0" y="1072.0">- add_connection</tspan>
-<tspan x="28.0" y="1086.0">- remove_connection</tspan>
-<tspan x="28.0" y="1100.0">- can_add_component_type</tspan>
+<tspan x="28.0" y="1044.0">- validate_invariants</tspan>
+<tspan x="28.0" y="1058.0">- _is_valid_unit</tspan>
+<tspan x="28.0" y="1072.0">- is_compatible_with</tspan>
+<tspan x="28.0" y="1086.0">- get_size_in_bytes</tspan>
+<tspan x="28.0" y="1100.0">- can_be_used_in_interface</tspan>
 </text>
-<rect x="300.0" y="1030.0" width="260.0" height="72.0" fill="#E8F5E8" stroke="#333" stroke-width="1" rx="6"/>
-<text x="308.0" y="1046.0" font-family="sans-serif" font-size="12">
-<tspan x="308.0" y="1046.0">PortConnection</tspan>
-<tspan x="308.0" y="1060.0">- __init__</tspan>
+<rect x="300.0" y="999.9999999999999" width="260.0" height="131.99999999999997" fill="#E8F5E8" stroke="#333" stroke-width="1" rx="6"/>
+<text x="308.0" y="1015.9999999999999" font-family="sans-serif" font-size="12">
+<tspan x="308.0" y="1015.9999999999999">PortInterface</tspan>
+<tspan x="308.0" y="1030.0">- __init__</tspan>
+<tspan x="308.0" y="1044.0">- add_data_element</tspan>
+<tspan x="308.0" y="1058.0">- remove_data_element</tspan>
+<tspan x="308.0" y="1072.0">- change_name</tspan>
+<tspan x="308.0" y="1086.0">- validate_invariants</tspan>
+<tspan x="308.0" y="1100.0">- _is_valid_interface_name</tspan>
 </text>
-<rect x="580.0" y="999.9999999999999" width="260.0" height="131.99999999999997" fill="#E8F5E8" stroke="#333" stroke-width="1" rx="6"/>
-<text x="588.0" y="1015.9999999999999" font-family="sans-serif" font-size="12">
-<tspan x="588.0" y="1015.9999999999999">ARXMLDocument</tspan>
-<tspan x="588.0" y="1030.0">- __init__</tspan>
-<tspan x="588.0" y="1044.0">- file_path</tspan>
-<tspan x="588.0" y="1058.0">- schema_version</tspan>
-<tspan x="588.0" y="1072.0">- modified</tspan>
-<tspan x="588.0" y="1086.0">- set_modified</tspan>
-<tspan x="588.0" y="1100.0">- sw_component_types</tspan>
+<rect x="580.0" y="1030.0" width="260.0" height="72.0" fill="#E8F5E8" stroke="#333" stroke-width="1" rx="6"/>
+<text x="588.0" y="1046.0" font-family="sans-serif" font-size="12">
+<tspan x="588.0" y="1046.0">ServiceElement</tspan>
+<tspan x="588.0" y="1060.0">- __init__</tspan>
 </text>
 </svg>
